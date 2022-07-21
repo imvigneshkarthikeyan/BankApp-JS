@@ -254,6 +254,11 @@ function getTimeStamp() {
                             //LOGIN//
 //================================================================================================================================================================//
 
+function openLoginPage() {
+    document.getElementById("signUpPageDiv").style.display = "none";
+    document.getElementById("loginDivision").style.display = "";
+}
+
 //Open Staff Login
 function openStaffLogin() {
     document.getElementById("loginDivision").style.display = "none";
@@ -1262,25 +1267,163 @@ function openBankWideTransactions() {
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
-                            // **** Module//
+                            // SignUp Module//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
-
-
-//function SignUp
-function addNewCust() {
-    let newCust = {
-        "cust_id": "4",
-        "cust_login_id": "vicky@abc.com",
-        "cust_pass": "123",
-        "bank_id": "1",
-        "cust_name": "Vicky",
-        "phone": "8793128791",
-        "pan": "POIUJ8770O",
-        "aadhar": "890123890423",
-        "address": "Chennai"
-    }
-    customerData.push(newCust);
+//Open SignUp
+function openSignUp() {
+    document.getElementById("loginDivision").style.display = "none";
+    document.getElementById("signUpPageDiv").style.display = "";
+    document.getElementById("signupDivision").style.display = "";
+    document.getElementById("displayMsgSignUp").innerHTML = "";
+        document.getElementById("userNameIdSignUp").style.display = "";
+        document.getElementById("bankDetailsSignUp").style.display = "none";
+        document.getElementById("branchDetailsSignUp").style.display = "none";
+        document.getElementById("otherDetailsSignUp").style.display = "none";
+        document.getElementById("errorMsgSignUp").style.display = "";
 }
+
+//Check userID exist
+function checkUserExist() {
+    var userName = document.getElementById("nameFieldSignUp").value;
+    var userId = document.getElementById("loginIdFieldSignUp").value;
+    let errorDiv = document.getElementById("errorMsgSignUp");
+    if (userName === "" && userId === "") {
+        errorDiv.innerHTML = "<p style=color:red>Please enter your user name and user ID to signup</p>";
+    } else if (userName === "") {
+        errorDiv.innerHTML = "<p style=color:red>Please enter your user name to signup</p>";
+    } else if (userId === "") {
+        errorDiv.innerHTML = "<p style=color:red>Please enter your user ID to signup</p>";
+    } else if (userName.length < 2 || userName.length > 30) {
+        errorDiv.innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
+    } else if (userId.length < 5 || userId.length > 320) {
+        errorDiv.innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
+    } else if (!validateEmail(userId)) {
+        errorDiv.innerHTML = "<p style=color:red>Enter a valid mail ID</p>";
+    } else if (customerData.find(customer => customer.cust_login_id === userId)) {
+        errorDiv.innerHTML = "<p style=color:red>This login ID already exist! Click Login or enter different ID to register.</p>";
+    } else {
+        errorDiv.innerHTML = "<p></p>";
+        fetchUniqueBanksAndPopulate();
+        document.getElementById("userNameIdSignUp").style.display = "none";
+        document.getElementById("bankDetailsSignUp").style.display = "";
+        document.getElementById("branchDetailsSignUp").style.display = "none";
+        document.getElementById("otherDetailsSignUp").style.display = "none";
+        document.getElementById("errorMsgSignUp").style.display = "none";
+        document.getElementById("nextBtnSignUp").style.display = "none";
+    }
+}
+
+//Get the unique banks 
+function fetchUniqueBanksAndPopulate() {
+    let uniqueBanks = Array.from(new Set(bankData.map(bank => bank.bank_name)));
+    let out;
+    for (let i = 0; i < uniqueBanks.length; i++) {
+        out += "<option value=" + uniqueBanks[i] + ">" + uniqueBanks[i] + "</option>";
+    }
+    document.getElementById("bankSelectField").innerHTML = out;
+};
+
+//Get branch for selected bank Function
+function getBranchForBank() { //Check Bank, Branch exists!!!!
+    var bankField = document.getElementById("bankSelectField");
+    var selectedBank = bankField.options[bankField.selectedIndex].value;
+    let branchesForBank = bankData.filter(bank => bank.bank_name === selectedBank);
+    let out;
+    for (let i = 0; i < branchesForBank.length; i++) {
+        out += "<option value=" + branchesForBank[i].branch_name + ">" + branchesForBank[i].branch_name + "</option>";
+    }
+    document.getElementById("branchSelectField").innerHTML = out;
+    document.getElementById("userNameIdSignUp").style.display = "none";
+    document.getElementById("bankDetailsSignUp").style.display = "none";
+    document.getElementById("branchDetailsSignUp").style.display = "";
+    document.getElementById("otherDetailsSignUp").style.display = "none";
+    document.getElementById("errorMsgSignUp").style.display = "none";
+    document.getElementById("nextBtnSignUp").style.display = "none";
+}
+
+//Open other details in signup
+function openOtherDetailsForSignUp() { //Check this combination of bank and branch exists!!!!
+    var bankField = document.getElementById("bankSelectField");
+    var selectedBank = bankField.options[bankField.selectedIndex].value;
+    var branchField = document.getElementById("branchSelectField");
+    var selectedBranch = branchField.options[branchField.selectedIndex].value;
+    // let bankBranch = bankData.find(bank => bank.bank_name === selectedBank && bank.branch_name === selectedBranch);
+    // console.log(bankBranch);
+    // if (bankBranch == "undefined") {
+    //     document.getElementById("errorMsgForBranchSignUp").innerHTML = "<p style=color:red>The selected bank doesn't exist, please refresh and try again!</p>";
+    //     console.log('Error');
+    // }
+    document.getElementById("userNameIdSignUp").style.display = "none";
+    document.getElementById("bankDetailsSignUp").style.display = "none";
+    document.getElementById("branchDetailsSignUp").style.display = "none";
+    document.getElementById("otherDetailsSignUp").style.display = "";
+    document.getElementById("errorMsgSignUp").style.display = "none";
+    document.getElementById("nextBtnSignUp").style.display = "none";
+}
+
+function signUp() {
+    var userName = document.getElementById("nameFieldSignUp").value;
+    var userId = document.getElementById("loginIdFieldSignUp").value;
+    var userBankName = document.getElementById("bankSelectField").value;
+    var userBranchName = document.getElementById("branchSelectField").value;
+    var userPass = document.getElementById("passFieldSignUp").value;
+    var userAadhar = document.getElementById("aadharFieldSignUp").value;
+    var userPan = document.getElementById("panFieldSignUp").value;
+    var userPhone = document.getElementById("phoneFieldSignUp").value;
+    var userAddress = document.getElementById("addressFieldSignUp").value;
+    if (userName === "" || userId === "" || userBankName === "" || userBranchName === "" || userPass === "" || userAadhar === "" || userPan === "" || userPhone === "" || userAddress === "") {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Please enter all the details to signup</p>";
+    } else if (userName.length < 2 || userName.length > 30) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
+    } else if (userId.length < 5 || userId.length > 320) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
+    } else if (!validateEmail(userId)) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Enter a valid mail ID</p>";
+    } else if (customerData.find(customer => customer.cust_login_id === userId)) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>This login ID already exist! Click Login or enter different ID to register.</p>";
+    } else if (userPass.length < 3 || userPass.length > 16) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters.</p>";
+    } else if (isNaN(userPhone)) { //ADD bank & branch!!!!
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number should not have text, please enter number.</p>";
+    } else if (userPhone.length != 10) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid phone number, Please try again(10 digits is valid).</p>";
+    } else if (userPan.length != 10) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid PAN number, Please try again(10 digits is valid).</p>";
+    } else if (isNaN(userAadhar)) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar should not have text, please enter number.</p>";
+    } else if (userAadhar.length != 12) {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid Aadhar number, Please try again(12 digits is valid).</p>";
+    } else if (userAddress.length < 3 || userAddress.length > 50) { //Check if aadhar, pan, phone already exists??
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>PAN number already exists, go back and login or try giving different PAN number.</p>";
+    } else {
+        customerData.push({
+            "cust_id": Math.floor(Math.random() * Date.now()),
+            "cust_login_id": userId,
+            "cust_pass": userPass,
+            "bank_id": userBankName, //Change this to bank_id !!!!
+            "cust_name": userName,
+            "phone": userPhone,
+            "pan": userPan,
+            "aadhar": userAadhar,
+            "address": userAddress
+        });
+        console.log(customerData);
+        document.getElementById("signupDivision").style.display = "none";
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:green>User created successfully!</p>";
+        document.getElementById("nameFieldSignUp").value = "";
+        document.getElementById("loginIdFieldSignUp").value = "";
+        document.getElementById("bankSelectField").value = "";
+        document.getElementById("branchSelectField").value = "";
+        document.getElementById("passFieldSignUp").value = "";
+        document.getElementById("aadharFieldSignUp").value = "";
+        document.getElementById("panFieldSignUp").value = "";
+        document.getElementById("phoneFieldSignUp").value = "";
+        document.getElementById("addressFieldSignUp").value = "";
+    }
+}
+
+
+
 

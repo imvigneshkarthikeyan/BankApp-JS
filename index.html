@@ -7,9 +7,9 @@
     </head>
     <body>
     <center>
-       <div>
+       <div id="loginPageDiv">
             <h1>Welcome to Bank Application!</h1>
-
+            <!-- Login For Customer -->
             <div id="loginDivision">
                 <h3>CUSTOMER LOGIN</h3>
                 <h4>Enter your login id and password</h4>
@@ -20,7 +20,7 @@
                 <button class="btn2" onclick="openSignUp()">Sign Up</button><br>
                 <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openStaffLogin()">Click here for Bank Staff Login</a>
             </div>
-
+            <!-- Login For Bank Employee -->
             <div id="loginDivisionForStaff" style="display: none;">
                 <h3>BANK STAFF LOGIN</h3>
                 <h4>Enter your login id and password</h4>
@@ -29,7 +29,55 @@
                 <br> <div id="msgForUserForStaff"></div> <br>
                 <button class="btn" id="loginBtnForStaff" onclick="logInForEmployee('idForStaff', 'passForStaff', 'msgForUserForStaff')" style="display: none">Log In</button><br>
                 <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openCustomerLogin()">Click here for Customer Login</a>
-            </div>            
+            </div>           
+        </div>
+        <!-- SignUp For Customer -->
+        <div id="signUpPageDiv" style="display: none;">
+            <div id="signupDivision">
+                <h4>Fill your details to create a new account</h4>
+                <div id="userNameIdSignUp">
+                    <br> Name: <input type="text" id="nameFieldSignUp" autocomplete="off" /> <br>
+                    <br> Login ID: <input type="text" id="loginIdFieldSignUp" onkeyup="validateLogin('loginIdFieldSignUp', 'errorMsgSignUp', 'nextBtnSignUp');" autocomplete="off" /> <br>
+                </div>
+                <br>
+                <div id="errorMsgSignUp"></div>
+                <div id="nextBtnSignUp" style="display: none">
+                    <br>
+                    <button class="btn" onclick="checkUserExist()">Next</button>
+                </div>
+                <div id="bankDetailsSignUp" style="display: none">
+                    <br>
+                    Select Bank:<select id="bankSelectField"> </select>
+                    <br>
+                    <div id="errorMsgForBankSignUp"></div>
+                    <br>
+                    <button class="btn" onclick="getBranchForBank()">Next</button>
+                </div>
+                <div id="branchDetailsSignUp" style="display: none">
+                    <br>
+                    Select Branch: <select id="branchSelectField"> </select>
+                    <br>
+                    <div id="errorMsgForBranchSignUp"></div>
+                    <br>
+                    <button class="btn" onclick="openOtherDetailsForSignUp()">Next</button>
+                </div>
+                <div id="otherDetailsSignUp" style="display: none">
+                    <br> Password: <input type="password" id="passFieldSignUp" autocomplete="off" /> <br>
+                    <br> Aadhar Number: <input type="text" id="aadharFieldSignUp" onkeypress="return onlyNumberKey(event)"
+                        autocomplete="off" /> <br>
+                    <br> Pan: <input type="text" id="panFieldSignUp" autocomplete="off" /> <br>
+                    <br> Phone: <input type="text" id="phoneFieldSignUp" onkeypress="return onlyNumberKey(event)"
+                        autocomplete="off" /> <br>
+                    <br> Address: <input type="text" id="addressFieldSignUp" autocomplete="off" /> <br>
+                    <br>
+                    <button id="submitBtnSignUp" class="btn" onclick="signUp()">Submit</button>
+                </div>
+            </div>
+            <div id="btnMsgSignUpDiv">
+                <div id="displayMsgSignUp"></div>
+                <br>
+                <button id="goBackLoginSignUp" class="btn2" onclick=openLoginPage()>Go to Login</button>
+            </div>
         </div> 
     </center>
     <script src="js/main.js"></script>

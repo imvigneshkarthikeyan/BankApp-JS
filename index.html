@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <meta http-equiv="Content-Type" content="text/html; charset=UTF-8">
+        <title>Bank App</title>
+        <link rel="stylesheet" href="style/style.css">
+    </head>
+    <body>
+    <center>
+       <div>
+            <h1>Welcome to Bank Application!</h1>
+
+            <div id="loginDivision">
+                <h3>CUSTOMER LOGIN</h3>
+                <h4>Enter your login id and password</h4>
+                <br> Login ID: <input type="text "id="id" onkeyup="validateLogin('id', 'msgForUser', 'loginBtn');" autocomplete="off"/> <br>
+                <br> Password: <input type="password" id="pass" autocomplete="off"/> <br>
+                <br> <div id="msgForUser"></div> <br>
+                <button class="btn" id="loginBtn" onclick="logIn('id', 'pass', 'msgForUser')" style="display: none">Log In</button>
+                <button class="btn2" onclick="openSignUp()">Sign Up</button><br>
+                <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openStaffLogin()">Click here for Bank Staff Login</a>
+            </div>
+
+            <div id="loginDivisionForStaff" style="display: none;">
+                <h3>BANK STAFF LOGIN</h3>
+                <h4>Enter your login id and password</h4>
+                <br> Login ID: <input type="text" id="idForStaff" onkeyup="validateLogin('idForStaff', 'msgForUserForStaff', 'loginBtnForStaff');" autocomplete="off"/> <br>
+                <br> Password: <input type="password" id="passForStaff" autocomplete="off"/> <br>
+                <br> <div id="msgForUserForStaff"></div> <br>
+                <button class="btn" id="loginBtnForStaff" onclick="logInForEmployee('idForStaff', 'passForStaff', 'msgForUserForStaff')" style="display: none">Log In</button><br>
+                <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openCustomerLogin()">Click here for Customer Login</a>
+            </div>            
+        </div> 
+    </center>
+    <script src="js/main.js"></script>
+    <script>
+        window.onload = isUserLoggedIn();
+    </script>
+    </body>
+</html>

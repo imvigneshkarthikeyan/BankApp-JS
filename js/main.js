@@ -817,27 +817,27 @@ function openAddMoney() {
 }
 
 //Validate Customer Account Number
-function validateCustomerAccountNumber() {
+function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, operation) {
     var userIdJSON = sessionStorage.getItem("currentUser");
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        var accNum = document.getElementById("accNumField").value;
+        var accNum = document.getElementById(field).value;
         if (accNum === "") {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter the account number</p>";
+            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter valid amount</p>";
         } else if (accNum.length!=11) {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
         } else {
             if (!accountData.some(account => account.account_num === accNum)) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
             } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
             } else {
-                document.getElementById("getAccNumDivForAdd").style.display = "none";
-                document.getElementById("moneyDivForAdd").style.display = "";
-                document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be added to: " + accNum;
+                document.getElementById(divToHide).style.display = "none";
+                document.getElementById(divToOpen).style.display = "";
+                document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be "+ operation +" : " + accNum;
             }
         }
     } else {
@@ -871,7 +871,7 @@ function addMoney() {
             } else if (isNaN(amount)) {
                 document.getElementById("msgForUser").innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
             } else if (amount > 1000000) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>The maimum transaction is ₹1000000</p>";
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
             } else if (amount < 1) {
                 document.getElementById("msgForUser").innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
             } else if (note.length > 20) {
@@ -880,6 +880,18 @@ function addMoney() {
                 //Add Money function
                 getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
                 console.log(getAccountDetailsWithAccountNumber(accNum).amount);
+                transactionData.push({
+                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
+                        "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
+                        "from_acc_no": accNum,
+                        "to_acc_no": accNum,
+                        "amount_transfered": amount,
+                        "trans_note": note,
+                        "balance": getAccountDetailsWithAccountNumber(accNum).amount,
+                        "date_time": getTimeStamp()               
+                    });
+                console.log(transactionData);
                 document.getElementById("getAccNumDivForAdd").style.display = "none";
                 document.getElementById("moneyDivForAdd").style.display = "none";
                 document.getElementById("msgForUser").innerHTML = "<p style=color:green>Money added successfully.</p>";
@@ -888,6 +900,95 @@ function addMoney() {
     } else {
         location.href = 'index.html';
         sessionStorage.clear();
+    }
+}
+
+//================================================================================================================================================================//
+                            //Employee - Staff - Withdraw Money TAB//
+//================================================================================================================================================================//
+//Open Withdraw Money
+function openWithdrawMoney() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        document.getElementById("bankStaffFunctions").style.display = "";
+        document.getElementById("bankManagerFunctions").style.display = "none";
+        document.getElementById("userInfo").style.display = "none";
+        document.getElementById("addMoneyDiv").style.display = "none";
+        document.getElementById("withdrawMoneyDiv").style.display = "";
+        document.getElementById("getAccNumDivForWithdraw").style.display = "";
+        document.getElementById("validateAccNumBtn2").style.display = "none";
+        document.getElementById("msgForUserForWithdraw").innerHTML = "";
+        document.getElementById("accNumFieldForWithdraw").value = "";
+        document.getElementById("moneyfieldForWithdraw").value = "";
+        document.getElementById("notefieldForWithdraw").value = "";
+        document.getElementById("moneyDivForWithdraw").style.display = "none";
+        document.getElementById("viewAllCustomersDiv").style.display = "none";
+    } else {
+        location.href = 'index.html';
+        sessionStorage.clear();        
+    }
+}
+
+//Validate Account Number => Is done from common function available in "Employee - Staff - Add Money TAB" section in code.
+
+//Withdraw Money Function
+function withdrawMoney() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        var accNum = document.getElementById("accNumFieldForWithdraw").value;
+        var amount = document.getElementById("moneyfieldForWithdraw").value;
+        var note = document.getElementById("notefieldForWithdraw").value;
+        if (accNum === "") {
+            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Please enter the account number</p>";
+        } else if (isNaN(accNum)) {
+            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+        } else if (accNum.length!=11) {
+            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+        } else { 
+            if (!accountData.some(account => account.account_num === accNum)) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+            } else if (amount === "" || amount === "0") {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+            } else if (isNaN(amount)) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+            } else if (getAccountDetailsWithAccountNumber(accNum).amount < amount) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Insufficient amount, your balance is "+ getAccountDetailsWithAccountNumber(accNum).amount +"</p>";
+            } else if (amount > 1000000) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
+            } else if (amount < 1) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+            } else if (note.length > 20) {
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+            } else {
+                //Withdraw money function
+                getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
+                console.log(getAccountDetailsWithAccountNumber(accNum).amount);
+                transactionData.push({
+                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
+                        "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
+                        "from_acc_no": accNum,
+                        "to_acc_no": accNum,
+                        "amount_transfered": -amount,
+                        "trans_note": note,
+                        "balance": getAccountDetailsWithAccountNumber(accNum).amount,
+                        "date_time": getTimeStamp()               
+                    });
+                console.log(transactionData);
+                document.getElementById("getAccNumDivForWithdraw").style.display = "none";
+                document.getElementById("moneyDivForWithdraw").style.display = "none";
+                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
+            }
+        }
+    } else {
+        location.href = 'index.html';
+        sessionStorage.clear();    
     }
 }
 

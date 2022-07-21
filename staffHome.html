@@ -24,7 +24,7 @@
                     <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumField" placeholder="Enter the account number to be deposited" autocomplete="off" onkeydown="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');" onkeyup="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');" onkeypress="return onlyNumberKey(event)">
                     <br>
                     <br>
-                    <button id="validateAccNumBtn1" style="display: none" class="block" onclick="validateCustomerAccountNumber()">Next >>> </button>
+                    <button id="validateAccNumBtn1" style="display: none" class="block" onclick="validateCustomerAccountNumber('accNumField', 'msgForUser', 'getAccNumDivForAdd', 'moneyDivForAdd', 'added to')">Next >>> </button>
                 </div>
                 <div id="moneyDivForAdd" style="display: none">
                     <h4 id="accNumToBeSent"></h4>
@@ -43,14 +43,14 @@
                 <h3>Withdraw Money</h3>
                 <div id="getAccNumDivForWithdraw">
                     <h4>Enter the account number of the customer to which the amount has to be withdrawn</h4>
-                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumFieldForWithdraw" placeholder="Enter the account number to be withdrawn" onkeydown="limitAccNumForWithdraw(this);" onkeyup="limitAccNumForWithdraw(this);" onkeypress="return onlyNumberKey(event)" autocomplete="off">
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumFieldForWithdraw" placeholder="Enter the account number to be withdrawn" onkeydown="limitAccNum(this, 'msgForUserForWithdraw', 'validateAccNumBtn2');" onkeyup="limitAccNum(this, 'msgForUserForWithdraw', 'validateAccNumBtn2');" onkeypress="return onlyNumberKey(event)" autocomplete="off">
                     <br>
                     <br>
-                    <button id="validateAccNumBtn2" style="display: none" class="block" onclick="validateCustomerAccountNumberInWithdraw()">Next >>> </button>
+                    <button id="validateAccNumBtn2" style="display: none" class="block" onclick="validateCustomerAccountNumber('accNumFieldForWithdraw', 'msgForUserForWithdraw', 'getAccNumDivForWithdraw', 'moneyDivForWithdraw', 'withdrawn from')">Next >>> </button>
                 </div>
                 <div id="moneyDivForWithdraw" style="display: none">
                     <h4>Enter the amount to be withdrawn</h4>
-                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfieldForWithdraw" placeholder="Enter amount to be withdrawn" onkeydown="limitForWithdraw(this);" onkeyup="limitForWithdraw(this);" onkeypress="return onlyNumberKey(event)" autocomplete="off">
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfieldForWithdraw" placeholder="Enter amount to be withdrawn" onkeydown="limit(this, 'msgForUserForWithdraw');" onkeyup="limit(this, 'msgForUserForWithdraw');" onkeypress="return onlyNumberKey(event)" autocomplete="off">
                     <br>
                     <br>
                     <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="notefieldForWithdraw" placeholder="Enter the note for reference" autocomplete="off">

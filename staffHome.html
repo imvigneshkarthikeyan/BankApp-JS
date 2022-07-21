@@ -21,14 +21,14 @@
                 <h3>Deposit Money</h3>
                 <div id="getAccNumDivForAdd">
                     <h4>Enter the account number of the customer to which the amount has to be deposited</h4>
-                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumField" placeholder="Enter the account number to be deposited" autocomplete="off" onkeydown="limitAccNum(this);" onkeyup="limitAccNum(this);" onkeypress="return onlyNumberKey(event)">
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumField" placeholder="Enter the account number to be deposited" autocomplete="off" onkeydown="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');" onkeyup="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');" onkeypress="return onlyNumberKey(event)">
                     <br>
                     <br>
                     <button id="validateAccNumBtn1" style="display: none" class="block" onclick="validateCustomerAccountNumber()">Next >>> </button>
                 </div>
                 <div id="moneyDivForAdd" style="display: none">
                     <h4 id="accNumToBeSent"></h4>
-                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfield" placeholder="Enter amount to be deposited" autocomplete="off" onkeydown="limit(this);" onkeyup="limit(this);" onkeypress="return onlyNumberKey(event)">
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfield" placeholder="Enter amount to be deposited" autocomplete="off" onkeydown="limit(this, 'msgForUser');" onkeyup="limit(this, 'msgForUser');" onkeypress="return onlyNumberKey(event)">
                     <br>
                     <br>
                     <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="notefield" placeholder="Enter the note for reference" autocomplete="off">

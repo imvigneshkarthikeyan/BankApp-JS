@@ -182,6 +182,12 @@ function getAccountDetails(cust_id) {
     return account;    
 }
 
+//Fetch AccountDetails with account number
+function getAccountDetailsWithAccountNumber(acc_num) {
+    let account = accountData.find(account => account.account_num === acc_num);
+    return account;
+}
+
 //================================================================================================================================================================//
                             //Validators//
 //================================================================================================================================================================//
@@ -780,6 +786,109 @@ function openViewAllCustomers() {
     document.getElementById("addMoneyDiv").style.display = "none";
     document.getElementById("withdrawMoneyDiv").style.display = "none";
     document.getElementById("viewAllCustomersDiv").style.display = "";
+}
+
+//================================================================================================================================================================//
+                            //Employee - Staff - Add Money TAB//
+//================================================================================================================================================================//
+//Open Add Money
+function openAddMoney() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        document.getElementById("bankStaffFunctions").style.display = "";
+        document.getElementById("bankManagerFunctions").style.display = "none";
+        document.getElementById("userInfo").style.display = "none";
+        document.getElementById("addMoneyDiv").style.display = "";
+        document.getElementById("getAccNumDivForAdd").style.display = "";
+        document.getElementById("validateAccNumBtn1").style.display = "none";
+        document.getElementById("msgForUser").innerHTML = "";
+        document.getElementById("accNumField").value = "";
+        document.getElementById("moneyfield").value = "";
+        document.getElementById("notefield").value = "";
+        document.getElementById("moneyDivForAdd").style.display = "none";
+        document.getElementById("withdrawMoneyDiv").style.display = "none";
+        document.getElementById("viewAllCustomersDiv").style.display = "none";
+    } else {
+        location.href = 'index.html';
+        sessionStorage.clear();        
+    } 
+}
+
+//Validate Customer Account Number
+function validateCustomerAccountNumber() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        var accNum = document.getElementById("accNumField").value;
+        if (accNum === "") {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter the account number</p>";
+        } else if (isNaN(accNum)) {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+        } else if (accNum.length!=11) {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+        } else {
+            if (!accountData.some(account => account.account_num === accNum)) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+            } else {
+                document.getElementById("getAccNumDivForAdd").style.display = "none";
+                document.getElementById("moneyDivForAdd").style.display = "";
+                document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be added to: " + accNum;
+            }
+        }
+    } else {
+        location.href = 'index.html';
+        sessionStorage.clear();        
+    }
+}
+
+//Add Money Function
+function addMoney() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        var accNum = document.getElementById("accNumField").value;
+        var amount = document.getElementById("moneyfield").value;
+        var note = document.getElementById("notefield").value;
+        if (accNum === "") {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter the account number</p>";
+        } else if (isNaN(accNum)) {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+        } else if (accNum.length!=11) {
+            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+        } else {
+            if (!accountData.some(account => account.account_num === accNum)) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+            } else if (amount === "" || amount === "0") {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+            } else if (isNaN(amount)) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+            } else if (amount > 1000000) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>The maimum transaction is ₹1000000</p>";
+            } else if (amount < 1) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+            } else if (note.length > 20) {
+                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+            } else {
+                //Add Money function
+                getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
+                console.log(getAccountDetailsWithAccountNumber(accNum).amount);
+                document.getElementById("getAccNumDivForAdd").style.display = "none";
+                document.getElementById("moneyDivForAdd").style.display = "none";
+                document.getElementById("msgForUser").innerHTML = "<p style=color:green>Money added successfully.</p>";
+            }
+        }
+    } else {
+        location.href = 'index.html';
+        sessionStorage.clear();
+    }
 }
 
 //================================================================================================================================================================//

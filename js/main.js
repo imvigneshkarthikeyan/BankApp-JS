@@ -127,7 +127,6 @@ let transactionData = [
         "from_acc_no": "11111122222",
         "to_acc_no": "11111122222",
         "amount_transfered": "3300",
-        "balance": "3300",
         "trans_note": "Self transfer",
         "date_time": "21-7-2022 | 10:40"
     },
@@ -138,7 +137,6 @@ let transactionData = [
         "from_acc_no": "11111188888",
         "to_acc_no": "11111188888",
         "amount_transfered": "1060930",
-        "balance": "1060930",
         "trans_note": "Self transfer",
         "date_time": "21-7-2022 | 10:42"
     },
@@ -149,7 +147,6 @@ let transactionData = [
         "from_acc_no": "11111122222",
         "to_acc_no": "11111122222",
         "amount_transfered": "200",
-        "balance": "3500",
         "trans_note": "First transfer",
         "date_time": "21-7-2022 | 10:57"
     },
@@ -161,7 +158,6 @@ let transactionData = [
         "to_acc_no": "11111122222",
         "amount_transfered": "-200",
         "trans_note": "First transfer",
-        "balance": "1060730",
         "date_time": "21-7-2022 | 10:57"
     }
 ]
@@ -204,7 +200,7 @@ function generateUniqueID(n) {
 
 //Regex Check for login onKeyUp
 function validateLogin(id, msg, btn) {
-    var loginID = document.getElementById(id).value;
+    var loginID = document.getElementById(id).value.trim();
     var msgForUser = document.getElementById(msg);
     msgForUser.innerHTML = "";
     var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
@@ -283,7 +279,7 @@ function openCustomerLogin() {
 
 //Login Validator For Customer
 function logIn(id, pass, msg) {
-    var userId = document.getElementById(id).value;
+    var userId = document.getElementById(id).value.trim();
     var userPass = document.getElementById(pass).value;
     let msgDiv = document.getElementById(msg);
     if (userId === "" && userPass === "") {
@@ -317,7 +313,7 @@ function customerAuthenticateLogin(userId, userPass, msgDiv) {
 
 //Login Validator For Employee
 function logInForEmployee(id, pass, msg) {
-    var userId = document.getElementById(id).value;
+    var userId = document.getElementById(id).trim();
     var userPass = document.getElementById(pass).value;
     let msgDiv = document.getElementById(msg);
     if (userId === "" && userPass === "") {
@@ -537,6 +533,7 @@ function openCustomerTransactions() {
         if (customerTransactions.length === 0) {
             document.getElementById("custTransactionHistoryDiv").innerHTML = "<p> No Transactions till now</p>";
         } else {
+            var balance = getAccountDetails(customer.cust_id).amount;
             out = "<table> \
                 <tr> \
                         <th>Date | Time</th> \
@@ -545,24 +542,24 @@ function openCustomerTransactions() {
                         <th>Amount Transferred</th> \
                         <th>Balance</th> \
                         <th>Transaction Note</th> \
-                    </tr>";
-                for (let i = 0; i < customerTransactions.length; i++) {
-                    let amount = customerTransactions[i].amount_transfered;
-                    out += "<tr><td>" + customerTransactions[i].date_time + "</td> \
-                            <td>" + customerTransactions[i].from_acc_no + "</td> \
-                            <td>" + customerTransactions[i].to_acc_no + "</td>";
-                    if (Math.sign(amount) === -1) {
-                        out += "<td style='color: red'>" + customerTransactions[i].amount_transfered + "</td>";
-                    } else {
-                        out += "<td style='color: green'>" + customerTransactions[i].amount_transfered + "</td>";
-                    }
-                    //Modify balance//
-                    out += "<td>" + customerTransactions[i].balance + "</td> \
-                            <td>" + customerTransactions[i].trans_note + "</td> \
-                            </tr>";
+                </tr>";
+            for (let i = 0; i < customerTransactions.length; i++) {
+                let amount = customerTransactions[i].amount_transfered;
+                out += "<tr><td>" + customerTransactions[i].date_time + "</td> \
+                        <td>" + customerTransactions[i].from_acc_no + "</td> \
+                        <td>" + customerTransactions[i].to_acc_no + "</td>";
+                if (Math.sign(amount) === -1) {
+                    out += "<td style='color: red'>" + customerTransactions[i].amount_transfered + "</td>";
+                } else {
+                    out += "<td style='color: green'>" + customerTransactions[i].amount_transfered + "</td>";
                 }
-                out += "</table>";
-                document.getElementById("custTransactionHistoryDiv").innerHTML = out;
+                out += "<td>" + balance + "</td> \
+                        <td>" + customerTransactions[i].trans_note + "</td> \
+                        </tr>";
+                balance = Number(balance) - Number(customerTransactions[i].amount_transfered);        
+            }
+            out += "</table>";
+            document.getElementById("custTransactionHistoryDiv").innerHTML = out;
         }
     } else {
         location.href = 'index.html';  
@@ -606,7 +603,7 @@ function validateAccountNumberForTransfer() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumField").value;
+        var accNum = document.getElementById("accNumField").value.trim();
         let msgDiv = document.getElementById("msgForUser");
         if (accNum === "") {
             msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
@@ -638,9 +635,9 @@ function transferFund() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumField").value;
-        var amount = document.getElementById("moneyfield").value;
-        var note = document.getElementById("notefield").value;
+        var accNum = document.getElementById("accNumField").value.trim();
+        var amount = document.getElementById("moneyfield").value.trim();
+        var note = document.getElementById("notefield").value.trim();
         let msgDiv = document.getElementById("msgForUser");
         if (accNum === "") {
             msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
@@ -837,7 +834,7 @@ function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, oper
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        var accNum = document.getElementById(field).value;
+        var accNum = document.getElementById(field).value.trim();
         if (accNum === "") {
             document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
@@ -867,9 +864,9 @@ function addMoney() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        var accNum = document.getElementById("accNumField").value;
-        var amount = document.getElementById("moneyfield").value;
-        var note = document.getElementById("notefield").value;
+        var accNum = document.getElementById("accNumField").value.trim();
+        var amount = document.getElementById("moneyfield").value.trim();
+        var note = document.getElementById("notefield").value.trim();
         if (accNum === "") {
             document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
@@ -954,9 +951,9 @@ function withdrawMoney() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        var accNum = document.getElementById("accNumFieldForWithdraw").value;
-        var amount = document.getElementById("moneyfieldForWithdraw").value;
-        var note = document.getElementById("notefieldForWithdraw").value;
+        var accNum = document.getElementById("accNumFieldForWithdraw").value.trim();
+        var amount = document.getElementById("moneyfieldForWithdraw").value.trim();
+        var note = document.getElementById("notefieldForWithdraw").value.trim();
         if (accNum === "") {
             document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
@@ -1089,7 +1086,7 @@ function validateStaffToAdd() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        var newStaffID = document.getElementById("staffLoginIDfield").value;
+        var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
         if (newStaffID === "") {
             document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Please enter the login ID for staff</p>";
         } else if (!validateEmail(newStaffID)) {
@@ -1113,8 +1110,8 @@ function addStaff() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        var newStaffID = document.getElementById("staffLoginIDfield").value;
-        var newStaffName = document.getElementById("nameOfStaffToBeAdded").value;
+        var newStaffID = document.getElementById("staffLoginIDfield").trim();
+        var newStaffName = document.getElementById("nameOfStaffToBeAdded").value.trim();
         var newStaffPass = document.getElementById("passwordOfStaffToBeAdded").value;
         if (newStaffID === "" || newStaffName === "" || newStaffPass === "") {
             document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Enter all the details</p>";
@@ -1176,7 +1173,7 @@ function validateStaffToDelete() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value;
+        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
         if (staffIdToDelete === "") {
             document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
         } else if (!validateEmail(staffIdToDelete)) {
@@ -1206,7 +1203,7 @@ function deleteStaff() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value;
+        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
         if (staffIdToDelete === "") {
             document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
         } else if (!validateEmail(staffIdToDelete)) {
@@ -1296,8 +1293,8 @@ function openSignUp() {
 
 //Check userID exist
 function checkUserExist() {
-    var userName = document.getElementById("nameFieldSignUp").value;
-    var userId = document.getElementById("loginIdFieldSignUp").value;
+    var userName = document.getElementById("nameFieldSignUp").value.trim();
+    var userId = document.getElementById("loginIdFieldSignUp").value.trim();
     let errorDiv = document.getElementById("errorMsgSignUp");
     if (userName === "" && userId === "") {
         errorDiv.innerHTML = "<p style=color:red>Please enter your user name and user ID to signup</p>";
@@ -1336,9 +1333,9 @@ function fetchUniqueBanksAndPopulate() {
 };
 
 //Get branch for selected bank Function
-function getBranchForBank() { //Check Bank, Branch exists!!!!
+function getBranchForBank() {
     var bankField = document.getElementById("bankSelectField");
-    var selectedBank = bankField.options[bankField.selectedIndex].value;
+    var selectedBank = bankField.options[bankField.selectedIndex].value.trim();
     if (typeof bankData.find(b => b.bank_name === selectedBank) !== "undefined") {
         let branchesForBank = bankData.filter(bank => bank.bank_name === selectedBank);
         let out;
@@ -1359,11 +1356,11 @@ function getBranchForBank() { //Check Bank, Branch exists!!!!
 }
 
 //Open other details in signup
-function openOtherDetailsForSignUp() { //Check this combination of bank and branch exists!!!!
+function openOtherDetailsForSignUp() {
     var bankField = document.getElementById("bankSelectField");
-    var selectedBank = bankField.options[bankField.selectedIndex].value;
+    var selectedBank = bankField.options[bankField.selectedIndex].value.trim();
     var branchField = document.getElementById("branchSelectField");
-    var selectedBranch = branchField.options[branchField.selectedIndex].value;
+    var selectedBranch = branchField.options[branchField.selectedIndex].value.trim();
     let bank = bankData.find(b => b.bank_name === selectedBank && b.branch_name === selectedBranch);
     if (typeof bank !== "undefined") {
         document.getElementById("userNameIdSignUp").style.display = "none";
@@ -1378,15 +1375,15 @@ function openOtherDetailsForSignUp() { //Check this combination of bank and bran
 }
 
 function signUp() {
-    var userName = document.getElementById("nameFieldSignUp").value;
-    var userId = document.getElementById("loginIdFieldSignUp").value;
-    var userBankName = document.getElementById("bankSelectField").value;
-    var userBranchName = document.getElementById("branchSelectField").value;
+    var userName = document.getElementById("nameFieldSignUp").value.trim();
+    var userId = document.getElementById("loginIdFieldSignUp").value.trim();
+    var userBankName = document.getElementById("bankSelectField").value.trim();
+    var userBranchName = document.getElementById("branchSelectField").value.trim();
     var userPass = document.getElementById("passFieldSignUp").value;
-    var userAadhar = document.getElementById("aadharFieldSignUp").value;
-    var userPan = document.getElementById("panFieldSignUp").value;
-    var userPhone = document.getElementById("phoneFieldSignUp").value;
-    var userAddress = document.getElementById("addressFieldSignUp").value;
+    var userAadhar = document.getElementById("aadharFieldSignUp").value.trim();
+    var userPan = document.getElementById("panFieldSignUp").value.trim();
+    var userPhone = document.getElementById("phoneFieldSignUp").value.trim();
+    var userAddress = document.getElementById("addressFieldSignUp").value.trim();
     validateAndCreateNewUser(userName, userId, userBankName, userBranchName, userPass, userAadhar, userPan, userPhone, userAddress);
 }
 
@@ -1406,7 +1403,7 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters.</p>";
     } else if (typeof bank === "undefined") {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Error occured in Bank/Branch selection, please refresh & try again!</p>";
-    } else if (isNaN(userPhone)) { //ADD bank & branch!!!!
+    } else if (isNaN(userPhone)) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number should not have text, please enter number.</p>";
     } else if (userPhone.length != 10) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid phone number, Please try again(10 digits is valid).</p>";
@@ -1416,7 +1413,7 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar should not have text, please enter number.</p>";
     } else if (userAadhar.length != 12) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid Aadhar number, Please try again(12 digits is valid).</p>";
-    } else if (userAddress.length < 3 || userAddress.length > 50) { //Check if aadhar, pan, phone already exists??
+    } else if (userAddress.length < 3 || userAddress.length > 50) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Address should be minimum 3 characters and maximum 50 characters.</p>";
     } else if (typeof customerData.find(c => c.aadhar === userAadhar) !== "undefined") {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar number already exists, go back and login or try giving different Aadhar number.</p>";

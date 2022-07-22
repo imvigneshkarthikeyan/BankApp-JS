@@ -191,6 +191,16 @@ function getAccountDetailsWithAccountNumber(acc_num) {
 //================================================================================================================================================================//
                             //Validators//
 //================================================================================================================================================================//
+function generateUniqueID(n) {
+        var add = 1, max = 12 - add;
+        if ( n > max ) {
+            return generate(max) + generate(n - max);
+        }
+        max        = Math.pow(10, n+add);
+        var min    = max/10; // Math.pow(10, n) basically
+        var number = Math.floor( Math.random() * (max - min + 1) ) + min;
+        return ("" + number).substring(add); 
+}
 
 //Regex Check for login onKeyUp
 function validateLogin(id, msg, btn) {
@@ -659,7 +669,7 @@ function transferFund() {
                     let toAccount = accountData.find(account => account.account_num === accNum);
                     fromAccount.amount = Number(fromAccount.amount) - Number(amount);
                     transactionData.push({
-                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "trans_id": generateUniqueID(8),
                         "cust_id": fromAccount.cust_id,
                         "bank_id": fromAccount.bank_id,
                         "from_acc_no": fromAccount.account_num,
@@ -671,7 +681,7 @@ function transferFund() {
                     });
                     toAccount.amount = Number(toAccount.amount) + Number(amount);
                     transactionData.push({
-                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "trans_id": generateUniqueID(8),
                         "cust_id": toAccount.cust_id,
                         "bank_id": toAccount.bank_id,
                         "from_acc_no": fromAccount.account_num,
@@ -886,7 +896,7 @@ function addMoney() {
                 getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
                 console.log(getAccountDetailsWithAccountNumber(accNum).amount);
                 transactionData.push({
-                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "trans_id": generateUniqueID(8),
                         "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                         "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                         "from_acc_no": accNum,
@@ -975,7 +985,7 @@ function withdrawMoney() {
                 getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
                 console.log(getAccountDetailsWithAccountNumber(accNum).amount);
                 transactionData.push({
-                        "trans_id": Math.floor(Math.random() * Date.now()),
+                        "trans_id": generateUniqueID(8),
                         "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                         "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                         "from_acc_no": accNum,
@@ -1118,7 +1128,7 @@ function addStaff() {
             document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
         } else {
             employeeData.push({
-                    "emp_id": Math.floor(Math.random() * Date.now()),
+                    "emp_id": generateUniqueID(8),
                     "emp_login_id": newStaffID,
                     "emp_pass": newStaffPass,
                     "bank_id": employee.bank_id,
@@ -1329,18 +1339,23 @@ function fetchUniqueBanksAndPopulate() {
 function getBranchForBank() { //Check Bank, Branch exists!!!!
     var bankField = document.getElementById("bankSelectField");
     var selectedBank = bankField.options[bankField.selectedIndex].value;
-    let branchesForBank = bankData.filter(bank => bank.bank_name === selectedBank);
-    let out;
-    for (let i = 0; i < branchesForBank.length; i++) {
-        out += "<option value=" + branchesForBank[i].branch_name + ">" + branchesForBank[i].branch_name + "</option>";
+    if (typeof bankData.find(b => b.bank_name === selectedBank) !== "undefined") {
+        let branchesForBank = bankData.filter(bank => bank.bank_name === selectedBank);
+        let out;
+        for (let i = 0; i < branchesForBank.length; i++) {
+            out += "<option value=" + branchesForBank[i].branch_name + ">" + branchesForBank[i].branch_name + "</option>";
+        }
+        document.getElementById("branchSelectField").innerHTML = out;
+        document.getElementById("userNameIdSignUp").style.display = "none";
+        document.getElementById("bankDetailsSignUp").style.display = "none";
+        document.getElementById("branchDetailsSignUp").style.display = "";
+        document.getElementById("otherDetailsSignUp").style.display = "none";
+        document.getElementById("errorMsgSignUp").style.display = "none";
+        document.getElementById("nextBtnSignUp").style.display = "none";        
+    } else {
+        document.getElementById("errorMsgForBankSignUp").innerHTML = "<p style=color:red>Error occured, please refresh and try again.</p>";
     }
-    document.getElementById("branchSelectField").innerHTML = out;
-    document.getElementById("userNameIdSignUp").style.display = "none";
-    document.getElementById("bankDetailsSignUp").style.display = "none";
-    document.getElementById("branchDetailsSignUp").style.display = "";
-    document.getElementById("otherDetailsSignUp").style.display = "none";
-    document.getElementById("errorMsgSignUp").style.display = "none";
-    document.getElementById("nextBtnSignUp").style.display = "none";
+
 }
 
 //Open other details in signup
@@ -1349,18 +1364,17 @@ function openOtherDetailsForSignUp() { //Check this combination of bank and bran
     var selectedBank = bankField.options[bankField.selectedIndex].value;
     var branchField = document.getElementById("branchSelectField");
     var selectedBranch = branchField.options[branchField.selectedIndex].value;
-    // let bankBranch = bankData.find(bank => bank.bank_name === selectedBank && bank.branch_name === selectedBranch);
-    // console.log(bankBranch);
-    // if (bankBranch == "undefined") {
-    //     document.getElementById("errorMsgForBranchSignUp").innerHTML = "<p style=color:red>The selected bank doesn't exist, please refresh and try again!</p>";
-    //     console.log('Error');
-    // }
-    document.getElementById("userNameIdSignUp").style.display = "none";
-    document.getElementById("bankDetailsSignUp").style.display = "none";
-    document.getElementById("branchDetailsSignUp").style.display = "none";
-    document.getElementById("otherDetailsSignUp").style.display = "";
-    document.getElementById("errorMsgSignUp").style.display = "none";
-    document.getElementById("nextBtnSignUp").style.display = "none";
+    let bank = bankData.find(b => b.bank_name === selectedBank && b.branch_name === selectedBranch);
+    if (typeof bank !== "undefined") {
+        document.getElementById("userNameIdSignUp").style.display = "none";
+        document.getElementById("bankDetailsSignUp").style.display = "none";
+        document.getElementById("branchDetailsSignUp").style.display = "none";
+        document.getElementById("otherDetailsSignUp").style.display = "";
+        document.getElementById("errorMsgSignUp").style.display = "none";
+        document.getElementById("nextBtnSignUp").style.display = "none";
+    } else {
+        document.getElementById("errorMsgForBranchSignUp").innerHTML = "<p style=color:red>Error Occured, please refresh and try again!</p>";
+    }    
 }
 
 function signUp() {
@@ -1373,6 +1387,11 @@ function signUp() {
     var userPan = document.getElementById("panFieldSignUp").value;
     var userPhone = document.getElementById("phoneFieldSignUp").value;
     var userAddress = document.getElementById("addressFieldSignUp").value;
+    validateAndCreateNewUser(userName, userId, userBankName, userBranchName, userPass, userAadhar, userPan, userPhone, userAddress);
+}
+
+function validateAndCreateNewUser(userName, userId, userBankName, userBranchName, userPass, userAadhar, userPan, userPhone, userAddress) {
+    let bank = bankData.find(b => b.bank_name === userBankName && b.branch_name === userBranchName);
     if (userName === "" || userId === "" || userBankName === "" || userBranchName === "" || userPass === "" || userAadhar === "" || userPan === "" || userPhone === "" || userAddress === "") {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Please enter all the details to signup</p>";
     } else if (userName.length < 2 || userName.length > 30) {
@@ -1385,6 +1404,8 @@ function signUp() {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>This login ID already exist! Click Login or enter different ID to register.</p>";
     } else if (userPass.length < 3 || userPass.length > 16) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters.</p>";
+    } else if (typeof bank === "undefined") {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Error occured in Bank/Branch selection, please refresh & try again!</p>";
     } else if (isNaN(userPhone)) { //ADD bank & branch!!!!
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number should not have text, please enter number.</p>";
     } else if (userPhone.length != 10) {
@@ -1396,20 +1417,35 @@ function signUp() {
     } else if (userAadhar.length != 12) {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid Aadhar number, Please try again(12 digits is valid).</p>";
     } else if (userAddress.length < 3 || userAddress.length > 50) { //Check if aadhar, pan, phone already exists??
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Address should be minimum 3 characters and maximum 50 characters.</p>";
+    } else if (typeof customerData.find(c => c.aadhar === userAadhar) !== "undefined") {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar number already exists, go back and login or try giving different Aadhar number.</p>";
+    } else if (typeof customerData.find(c => c.pan === userPan) !== "undefined") {
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>PAN number already exists, go back and login or try giving different PAN number.</p>";
+    } else if (typeof customerData.find(c => c.phone === userPhone) !== "undefined") {
+        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number already exists, go back and login or try giving different Phone number.</p>";
     } else {
         customerData.push({
-            "cust_id": Math.floor(Math.random() * Date.now()),
+            "cust_id": generateUniqueID(8),
             "cust_login_id": userId,
             "cust_pass": userPass,
-            "bank_id": userBankName, //Change this to bank_id !!!!
+            "bank_id": bank.bank_id,
             "cust_name": userName,
             "phone": userPhone,
             "pan": userPan,
             "aadhar": userAadhar,
             "address": userAddress
         });
+        let customer = customerData.find(c => c.cust_login_id === userId);
+        accountData.push({
+            "account_id": generateUniqueID(8),
+            "account_num": generateUniqueID(11),
+            "amount": "0",
+            "cust_id": customer.cust_id,
+            "bank_id": bank.bank_id
+        });
         console.log(customerData);
+        console.log(accountData);
         document.getElementById("signupDivision").style.display = "none";
         document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:green>User created successfully!</p>";
         document.getElementById("nameFieldSignUp").value = "";

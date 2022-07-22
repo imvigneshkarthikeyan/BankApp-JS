@@ -264,14 +264,14 @@ function getTimeStamp() {
 function openStaffLogin() {
     document.getElementById("loginDivision").style.display = "none";
     document.getElementById("loginDivisionForStaff").style.display = "";
-    openStaffLoginPage();
+    openLoginPage();
 }
 
 //Open Customer Login
 function openCustomerLogin() {
     document.getElementById("loginDivision").style.display = "";
     document.getElementById("loginDivisionForStaff").style.display = "none";
-    openCustomerLoginPage();
+    openLoginPage();
 }
 
 //Login Validator For Customer
@@ -1463,38 +1463,29 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 
-function openCustomerLoginPage() {
-    document.getElementById("loginDivision").style.display = "";
-    document.getElementById("loginDivisionForStaff").style.display = "none";
-    document.getElementById("signUpPageDiv").style.display = "none";
-    document.getElementById("customerHomePageDiv").style.display = "none";
-    document.getElementById("staffHomePageDiv").style.display = "none";
-}
-
-function openStaffLoginPage() {
-    document.getElementById("loginDivision").style.display = "none";
-    document.getElementById("loginDivisionForStaff").style.display = "";
+function openLoginPage() {
+    document.getElementById("loginPageDiv").style.display = "";
     document.getElementById("signUpPageDiv").style.display = "none";
     document.getElementById("customerHomePageDiv").style.display = "none";
     document.getElementById("staffHomePageDiv").style.display = "none";
 }
 
 function openSignUpPage() {
-    document.getElementById("loginDivision").style.display = "none";
+    document.getElementById("loginPageDiv").style.display = "none";
     document.getElementById("signUpPageDiv").style.display = "";
     document.getElementById("customerHomePageDiv").style.display = "none";
     document.getElementById("staffHomePageDiv").style.display = "none";   
 }
 
 function openCustomerHomePage() {
-    document.getElementById("loginDivision").style.display = "none";
+    document.getElementById("loginPageDiv").style.display = "none";
     document.getElementById("signUpPageDiv").style.display = "none";
     document.getElementById("customerHomePageDiv").style.display = "";
     document.getElementById("staffHomePageDiv").style.display = "none";   
 }
 
 function openStaffHomePage() {
-    document.getElementById("loginDivision").style.display = "none";
+    document.getElementById("loginPageDiv").style.display = "none";
     document.getElementById("signUpPageDiv").style.display = "none";
     document.getElementById("customerHomePageDiv").style.display = "none";
     document.getElementById("staffHomePageDiv").style.display = "";      

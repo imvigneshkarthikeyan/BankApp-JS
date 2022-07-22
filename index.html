@@ -7,16 +7,16 @@
     </head>
     <body>
     <center>
-       <div id="loginPageDiv">
-            <h1>Welcome to Bank Application!</h1>
+        <h1>Welcome to Bank Application!</h1>
             <!-- Login For Customer -->
+        <div id="loginPageDiv">
             <div id="loginDivision">
                 <h3>CUSTOMER LOGIN</h3>
                 <h4>Enter your login id and password</h4>
-                <br> Login ID: <input type="text "id="id" onkeyup="validateLogin('id', 'msgForUser', 'loginBtn');" autocomplete="off"/> <br>
-                <br> Password: <input type="password" id="pass" autocomplete="off"/> <br>
-                <br> <div id="msgForUser"></div> <br>
-                <button class="btn" id="loginBtn" onclick="logIn('id', 'pass', 'msgForUser')" style="display: none">Log In</button>
+                <br> Login ID: <input type="text" id="idInLoginCust" onkeyup="validateLogin('idInLoginCust', 'msgForUserInLoginCust', 'loginBtnInLoginCust');" autocomplete="off"/> <br>
+                <br> Password: <input type="password" id="passInLoginCust" autocomplete="off"/> <br>
+                <br> <div id="msgForUserInLoginCust"></div> <br>
+                <button class="btn" id="loginBtnInLoginCust" onclick="logIn('idInLoginCust', 'passInLoginCust', 'msgForUserInLoginCust')" style="display: none">Log In</button>
                 <button class="btn2" onclick="openSignUp()">Sign Up</button><br>
                 <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openStaffLogin()">Click here for Bank Staff Login</a>
             </div>
@@ -24,10 +24,10 @@
             <div id="loginDivisionForStaff" style="display: none;">
                 <h3>BANK STAFF LOGIN</h3>
                 <h4>Enter your login id and password</h4>
-                <br> Login ID: <input type="text" id="idForStaff" onkeyup="validateLogin('idForStaff', 'msgForUserForStaff', 'loginBtnForStaff');" autocomplete="off"/> <br>
-                <br> Password: <input type="password" id="passForStaff" autocomplete="off"/> <br>
-                <br> <div id="msgForUserForStaff"></div> <br>
-                <button class="btn" id="loginBtnForStaff" onclick="logInForEmployee('idForStaff', 'passForStaff', 'msgForUserForStaff')" style="display: none">Log In</button><br>
+                <br> Login ID: <input type="text" id="idForStaffLogin" onkeyup="validateLogin('idForStaffLogin', 'msgForUserForStaffLogin', 'loginBtnForStaffLogin');" autocomplete="off"/> <br>
+                <br> Password: <input type="password" id="passForStaffLogin" autocomplete="off"/> <br>
+                <br> <div id="msgForUserForStaffLogin"></div> <br>
+                <button class="btn" id="loginBtnForStaffLogin" onclick="logInForEmployee('idForStaffLogin', 'passForStaffLogin', 'msgForUserForStaffLogin')" style="display: none">Log In</button><br>
                 <br><a style="color: blue; cursor: pointer; text-decoration: underline;" onclick="openCustomerLogin()">Click here for Customer Login</a>
             </div>           
         </div>
@@ -78,7 +78,7 @@
                 <br>
                 <button id="goBackLoginSignUp" class="btn2" onclick=openLoginPage()>Go to Login</button>
             </div>
-        </div> 
+        </div>
     </center>
     <script src="js/main.js"></script>
     <script>

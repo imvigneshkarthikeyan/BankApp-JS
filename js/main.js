@@ -1219,9 +1219,8 @@ function deleteStaff() {
             if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
                 msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
             } else {
-                //Check
                 indexToRemove = employeeData.findIndex(employee => employee.emp_login_id === staffIdToDelete);
-                employeeData.splice(indexToRemove, indexToRemove);
+                employeeData.splice(indexToRemove, 1);
                 document.getElementById("getUserNameToDeleteDiv").style.display = "none";
                 document.getElementById("empDetails").style.display = "none";
                 document.getElementById("deleteStaffBtn").style.display = "none";

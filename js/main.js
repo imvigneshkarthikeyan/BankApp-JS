@@ -281,7 +281,7 @@ function logIn(id, pass, msg) {
     let msgDiv = document.getElementById(msg);
     if (userId === "" && userPass === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter your user ID and password</p>";
-    } else if (userId === "") {//Add regex as well
+    } else if (userId === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter your user ID</p>";
     } else if (!validateEmail(userId)) {
         msgDiv.innerHTML = "<p style=color:red>Enter a valid mail id</p>";
@@ -298,7 +298,7 @@ function logIn(id, pass, msg) {
 //Login Authenticator for Customer
 function customerAuthenticateLogin(userId, userPass, msgDiv) {
     if (!customerData.find(customer => customer.cust_login_id === userId)) {
-        msgDiv.innerHTML = "<p style=color:red>Invalid UserID, Try again!</p>";
+        msgDiv.innerHTML = "<p style=color:red>Invalid User ID, Try again!</p>";
     } else if (!customerData.find(customer => customer.cust_pass === userPass)) {
         msgDiv.innerHTML = "<p style=color:red>Invalid password, Try again!</p>";
     } else {
@@ -478,6 +478,7 @@ function editInfo() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
+        let msgDiv = document.getElementById("displayMsg");
         var newUserPass = document.getElementById("passField").value;
         var newUserPhone = document.getElementById("phoneField").value.trim();
         var newUserAddress = document.getElementById("addressField").value.trim();
@@ -485,25 +486,25 @@ function editInfo() {
         var oldPhone = customer.phone;
         var oldAddress = customer.address;
         if (newUserPass === "" || newUserPhone === "" || newUserAddress === "") {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>Please fill all the details to be updated</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please fill all the details to be updated</p>";
         } else if (oldPass === newUserPass && oldPhone === newUserPhone && oldAddress === newUserAddress) {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>Please modify atleast one field to updated</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please modify atleast one field to updated</p>";
         } else if (newUserPass.length < 3 || newUserPass.length > 16) {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>The Password should be minimum 3 characters and maximum 16 characters</p>";
+            msgDiv.innerHTML = "<p style=color:red>The Password should be minimum 3 characters and maximum 16 characters</p>";
         } else if(isNaN(newUserPhone)){
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>Don't enter text, Please enter a valid mobile number.</p>";
+            msgDiv.innerHTML = "<p style=color:red>Don't enter text, Please enter a valid mobile number.</p>";
         } else if (newUserPhone.length != 10) {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>Please enter 10 digit Mobile number.</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter 10 digit Mobile number.</p>";
         } else if (newUserAddress.length < 3 || newUserAddress.length > 50) {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>The Address should be minimum 3 characters and maximum 50 characters</p>";
+            msgDiv.innerHTML = "<p style=color:red>The Address should be minimum 3 characters and maximum 50 characters</p>";
         } else if (customerData.some(customer => customer.phone === newUserPhone) && oldPhone!=newUserPhone) {
-            document.getElementById("displayMsg").innerHTML = "<p style=color:red>This phone number already exists</p>";
+            msgDiv.innerHTML = "<p style=color:red>This phone number already exists</p>";
         } else {
             customer.cust_pass = newUserPass;
             customer.phone = newUserPhone;
             customer.address = newUserAddress;
             document.getElementById("editDetails").style.display = "none";
-            document.getElementById("displayMsg").innerHTML = "<p style=color:green>User Updated Successfully!</p>";
+            msgDiv.innerHTML = "<p style=color:green>User Updated Successfully!</p>";
         }
     } else {
         location.href = 'index.html';  
@@ -861,30 +862,31 @@ function addMoney() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        let msgDiv = document.getElementById("msgForUser");
         var accNum = document.getElementById("accNumField").value.trim();
         var amount = document.getElementById("moneyfield").value.trim();
         var note = document.getElementById("notefield").value.trim();
         if (accNum === "") {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter the account number</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
         } else if (accNum.length!=11) {
-            document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
         } else {
             if (!accountData.some(account => account.account_num === accNum)) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
             } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
             } else if (amount === "" || amount === "0") {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+                msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
             } else if (isNaN(amount)) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
             } else if (amount > 1000000) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
+                msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
             } else if (amount < 1) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
             } else if (note.length > 20) {
-                document.getElementById("msgForUser").innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
             } else {
                 //Add Money function
                 getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
@@ -903,7 +905,7 @@ function addMoney() {
                 console.log(transactionData);
                 document.getElementById("getAccNumDivForAdd").style.display = "none";
                 document.getElementById("moneyDivForAdd").style.display = "none";
-                document.getElementById("msgForUser").innerHTML = "<p style=color:green>Money added successfully.</p>";
+                msgDiv.innerHTML = "<p style=color:green>Money added successfully.</p>";
             }
         }
     } else {
@@ -948,32 +950,33 @@ function withdrawMoney() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
+        let msgDiv = document.getElementById("msgForUserForWithdraw");
         var accNum = document.getElementById("accNumFieldForWithdraw").value.trim();
         var amount = document.getElementById("moneyfieldForWithdraw").value.trim();
         var note = document.getElementById("notefieldForWithdraw").value.trim();
         if (accNum === "") {
-            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Please enter the account number</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
-            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Please enter valid amount</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
         } else if (accNum.length!=11) {
-            document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
         } else { 
             if (!accountData.some(account => account.account_num === accNum)) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
             } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
             } else if (amount === "" || amount === "0") {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+                msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
             } else if (isNaN(amount)) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
             } else if (getAccountDetailsWithAccountNumber(accNum).amount < amount) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Insufficient amount, your balance is "+ getAccountDetailsWithAccountNumber(accNum).amount +"</p>";
+                msgDiv.innerHTML = "<p style=color:red>Insufficient amount, your balance is "+ getAccountDetailsWithAccountNumber(accNum).amount +"</p>";
             } else if (amount > 1000000) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
+                msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
             } else if (amount < 1) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
             } else if (note.length > 20) {
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+                msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
             } else {
                 //Withdraw money function
                 getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
@@ -992,7 +995,7 @@ function withdrawMoney() {
                 console.log(transactionData);
                 document.getElementById("getAccNumDivForWithdraw").style.display = "none";
                 document.getElementById("moneyDivForWithdraw").style.display = "none";
-                document.getElementById("msgForUserForWithdraw").innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
+                msgDiv.innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
             }
         }
     } else {
@@ -1083,13 +1086,14 @@ function validateStaffToAdd() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
+        let msgDiv = document.getElementById("msgForUserInAddStaff");
         var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
         if (newStaffID === "") {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Please enter the login ID for staff</p>";
+            msgDiv.innerHTML = "<p style=color:red>Please enter the login ID for staff</p>";
         } else if (!validateEmail(newStaffID)) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
         } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
         } else {
             document.getElementById("getUserNameToAddDiv").style.display = "none";
             document.getElementById("staffDetailsToAddDiv").style.display = "";
@@ -1107,19 +1111,20 @@ function addStaff() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
+        let msgDiv = document.getElementById("msgForUserInAddStaff");
         var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
         var newStaffName = document.getElementById("nameOfStaffToBeAdded").value.trim();
         var newStaffPass = document.getElementById("passwordOfStaffToBeAdded").value;
         if (newStaffID === "" || newStaffName === "" || newStaffPass === "") {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Enter all the details</p>";
+            msgDiv.innerHTML = "<p style=color:red>Enter all the details</p>";
         } else if (!validateEmail(newStaffID)) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
         } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
         } else if (newStaffName.length < 1 || newStaffName.length > 30) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>The name should be minimum of 1 character to maximum of 30 characters only</p>";        
+            msgDiv.innerHTML = "<p style=color:red>The name should be minimum of 1 character to maximum of 30 characters only</p>";        
         } else if (newStaffPass.length < 3 || newStaffPass.length > 16) {
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
+            msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
         } else {
             employeeData.push({
                     "emp_id": generateUniqueID(8),
@@ -1131,7 +1136,7 @@ function addStaff() {
                 });
             console.log(employeeData);
             document.getElementById("staffDetailsToAddDiv").style.display = "none";
-            document.getElementById("msgForUserInAddStaff").innerHTML = "<p style=color:green>Staff Created Successfully</p>";
+            msgDiv.innerHTML = "<p style=color:green>Staff Created Successfully</p>";
         }
     }
 }
@@ -1170,17 +1175,18 @@ function validateStaffToDelete() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
+        let msgDiv = document.getElementById("msgForUserInDeleteStaff");
         var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
         if (staffIdToDelete === "") {
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
+            msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
         } else if (!validateEmail(staffIdToDelete)) {
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
+            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
         } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
         } else {
             let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
             if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
-                document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
+                msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
             } else {
                 document.getElementById("getUserNameToDeleteDiv").style.display = "none";
                 document.getElementById("empDetails").style.display = "";
@@ -1200,23 +1206,26 @@ function deleteStaff() {
     var userId = JSON.parse(userIdJSON);
     let employee = employeeData.find(employee => employee.emp_login_id === userId);
     if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
+        let msgDiv = document.getElementById("msgForUserInDeleteStaff");
         var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
         if (staffIdToDelete === "") {
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
+            msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
         } else if (!validateEmail(staffIdToDelete)) {
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
+            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
         } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
-            document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
+            msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
         } else {
             let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
             if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
-                document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
+                msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
             } else {
-                employeeData.splice(employeeData.findIndex(employee => employee.emp_login_id === staffIdToDelete));
+                //Check
+                indexToRemove = employeeData.findIndex(employee => employee.emp_login_id === staffIdToDelete);
+                employeeData.splice(indexToRemove, indexToRemove);
                 document.getElementById("getUserNameToDeleteDiv").style.display = "none";
                 document.getElementById("empDetails").style.display = "none";
                 document.getElementById("deleteStaffBtn").style.display = "none";
-                document.getElementById("msgForUserInDeleteStaff").innerHTML = "<p style=color:green>Staff Deleted Successfully!</p>";
+                msgDiv.innerHTML = "<p style=color:green>Staff Deleted Successfully!</p>";
             }
         }
     } else {
@@ -1386,39 +1395,40 @@ function signUp() {
 
 //validations for signup
 function validateAndCreateNewUser(userName, userId, userBankName, userBranchName, userPass, userAadhar, userPan, userPhone, userAddress) {
+    let msgDiv = document.getElementById("displayMsgSignUp");
     let bank = bankData.find(b => b.bank_name === userBankName && b.branch_name === userBranchName);
     if (userName === "" || userId === "" || userBankName === "" || userBranchName === "" || userPass === "" || userAadhar === "" || userPan === "" || userPhone === "" || userAddress === "") {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Please enter all the details to signup</p>";
+        msgDiv.innerHTML = "<p style=color:red>Please enter all the details to signup</p>";
     } else if (userName.length < 2 || userName.length > 30) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
+        msgDiv.innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
     } else if (userId.length < 5 || userId.length > 320) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
+        msgDiv.innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
     } else if (!validateEmail(userId)) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Enter a valid mail ID</p>";
+        msgDiv.innerHTML = "<p style=color:red>Enter a valid mail ID</p>";
     } else if (customerData.find(customer => customer.cust_login_id === userId)) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>This login ID already exist! Click Login or enter different ID to register.</p>";
+        msgDiv.innerHTML = "<p style=color:red>This login ID already exist! Click Login or enter different ID to register.</p>";
     } else if (userPass.length < 3 || userPass.length > 16) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters.</p>";
     } else if (typeof bank === "undefined") {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Error occured in Bank/Branch selection, please refresh & try again!</p>";
+        msgDiv.innerHTML = "<p style=color:red>Error occured in Bank/Branch selection, please refresh & try again!</p>";
     } else if (isNaN(userPhone)) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number should not have text, please enter number.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Phone number should not have text, please enter number.</p>";
     } else if (userPhone.length != 10) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid phone number, Please try again(10 digits is valid).</p>";
+        msgDiv.innerHTML = "<p style=color:red>Invalid phone number, Please try again(10 digits is valid).</p>";
     } else if (userPan.length != 10) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid PAN number, Please try again(10 digits is valid).</p>";
+        msgDiv.innerHTML = "<p style=color:red>Invalid PAN number, Please try again(10 digits is valid).</p>";
     } else if (isNaN(userAadhar)) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar should not have text, please enter number.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Aadhar should not have text, please enter number.</p>";
     } else if (userAadhar.length != 12) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Invalid Aadhar number, Please try again(12 digits is valid).</p>";
+        msgDiv.innerHTML = "<p style=color:red>Invalid Aadhar number, Please try again(12 digits is valid).</p>";
     } else if (userAddress.length < 3 || userAddress.length > 50) {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Address should be minimum 3 characters and maximum 50 characters.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Address should be minimum 3 characters and maximum 50 characters.</p>";
     } else if (typeof customerData.find(c => c.aadhar === userAadhar) !== "undefined") {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Aadhar number already exists, go back and login or try giving different Aadhar number.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Aadhar number already exists, go back and login or try giving different Aadhar number.</p>";
     } else if (typeof customerData.find(c => c.pan === userPan) !== "undefined") {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>PAN number already exists, go back and login or try giving different PAN number.</p>";
+        msgDiv.innerHTML = "<p style=color:red>PAN number already exists, go back and login or try giving different PAN number.</p>";
     } else if (typeof customerData.find(c => c.phone === userPhone) !== "undefined") {
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:red>Phone number already exists, go back and login or try giving different Phone number.</p>";
+        msgDiv.innerHTML = "<p style=color:red>Phone number already exists, go back and login or try giving different Phone number.</p>";
     } else {
         customerData.push({
             "cust_id": generateUniqueID(8),
@@ -1442,7 +1452,7 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         console.log(customerData);
         console.log(accountData);
         document.getElementById("signupDivision").style.display = "none";
-        document.getElementById("displayMsgSignUp").innerHTML = "<p style=color:green>User created successfully!</p>";
+        msgDiv.innerHTML = "<p style=color:green>User created successfully!</p>";
         document.getElementById("nameFieldSignUp").value = "";
         document.getElementById("loginIdFieldSignUp").value = "";
         document.getElementById("bankSelectField").value = "";

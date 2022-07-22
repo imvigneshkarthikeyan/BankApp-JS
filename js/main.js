@@ -1285,7 +1285,6 @@ function openBankWideTransactions() {
 //================================================================================================================================================================//
 //Open SignUp
 function openSignUp() {
-    openSignUpPage();
     document.getElementById("signupDivision").style.display = "";
     document.getElementById("displayMsgSignUp").innerHTML = "";
         document.getElementById("userNameIdSignUp").style.display = "";
@@ -1293,6 +1292,7 @@ function openSignUp() {
         document.getElementById("branchDetailsSignUp").style.display = "none";
         document.getElementById("otherDetailsSignUp").style.display = "none";
         document.getElementById("errorMsgSignUp").style.display = "";
+    openSignUpPage()
 }
 
 //Check userID exist
@@ -1499,5 +1499,9 @@ function openStaffHomePage() {
     document.getElementById("customerHomePageDiv").style.display = "none";
     document.getElementById("staffHomePageDiv").style.display = "";      
 }
+
+//================================================================================================================================================================//
+//================================================================================================================================================================//
+//================================================================================================================================================================//
 
 

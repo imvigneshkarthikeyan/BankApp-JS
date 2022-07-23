@@ -291,12 +291,12 @@ function logIn(id, pass, msg) {
         msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters</p>";
     } else {
         msgDiv.innerHTML = "<p></p>";
-        customerAuthenticateLogin(userId, userPass, msgDiv);
+        customerAuthenticateLogin(userId, userPass, msgDiv, id, pass);
     }
 }
 
 //Login Authenticator for Customer
-function customerAuthenticateLogin(userId, userPass, msgDiv) {
+function customerAuthenticateLogin(userId, userPass, msgDiv, id, pass) {
     if (!customerData.find(customer => customer.cust_login_id === userId)) {
         msgDiv.innerHTML = "<p style=color:red>Invalid User ID, Try again!</p>";
     } else if (!customerData.find(customer => customer.cust_pass === userPass)) {
@@ -305,6 +305,9 @@ function customerAuthenticateLogin(userId, userPass, msgDiv) {
         sessionStorage.setItem("currentUser", JSON.stringify(userId));        
         msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
         openCustomerHomePage();
+        document.getElementById(id).value = "";
+        document.getElementById(pass).value = "";
+        msgDiv.innerHTML = "";
     }
 }
 
@@ -325,12 +328,12 @@ function logInForEmployee(id, pass, msg) {
         msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters</p>";
     } else {
         msgDiv.innerHTML = "<p></p>";
-        employeeAuthenticateLogin(userId, userPass, msgDiv);
+        employeeAuthenticateLogin(userId, userPass, msgDiv, id, pass);
     }
 }
 
 //Login Authenticator for Employee
-function employeeAuthenticateLogin(userId, userPass, msgDiv) {
+function employeeAuthenticateLogin(userId, userPass, msgDiv, id, pass) {
     if (!employeeData.find(employee => employee.emp_login_id === userId)) {
         msgDiv.innerHTML = "<p style=color:red>Invalid User ID, Try again!</p>";
     } else if (!employeeData.find(employee => employee.emp_pass === userPass)) {
@@ -339,23 +342,11 @@ function employeeAuthenticateLogin(userId, userPass, msgDiv) {
         sessionStorage.setItem("currentUser", JSON.stringify(userId));
         msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
         openStaffHomePage();
+        document.getElementById(id).value = "";
+        document.getElementById(pass).value = "";
+        msgDiv.innerHTML = "";
     }
 }
-
-// //Check is user logged in
-// function isUserLoggedIn() {
-//     var userIdJSON = sessionStorage.getItem("currentUser");
-//     var userId = JSON.parse(userIdJSON);
-//     let customer = customerData.find(customer => customer.cust_login_id === userId);
-//     let employee = employeeData.find(employee => employee.emp_login_id === userId);
-//     if (userId != null && typeof customer != "undefined") {
-//         location.href = 'home.html';
-//     } else if (userId != null && typeof employee != "undefined") {
-//         location.href = 'staffHome.html'
-//     } else {
-//         logout();
-//     }
-// }
 
 //Logout
 function logout() {

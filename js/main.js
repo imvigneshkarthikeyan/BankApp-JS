@@ -304,7 +304,7 @@ function customerAuthenticateLogin(userId, userPass, msgDiv) {
     } else {
         sessionStorage.setItem("currentUser", JSON.stringify(userId));        
         msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
-        location.href = 'home.html';  
+        openCustomerHomePage();
     }
 }
 
@@ -338,27 +338,29 @@ function employeeAuthenticateLogin(userId, userPass, msgDiv) {
     } else {
         sessionStorage.setItem("currentUser", JSON.stringify(userId));
         msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
-        location.href = 'staffHome.html';  
+        openStaffHomePage();
     }
 }
 
-//Check is user logged in
-function isUserLoggedIn() {
-    var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        location.href = 'home.html';
-    } else if (userId != null && typeof employee != "undefined") {
-        location.href = 'staffHome.html'
-    }
-}
+// //Check is user logged in
+// function isUserLoggedIn() {
+//     var userIdJSON = sessionStorage.getItem("currentUser");
+//     var userId = JSON.parse(userIdJSON);
+//     let customer = customerData.find(customer => customer.cust_login_id === userId);
+//     let employee = employeeData.find(employee => employee.emp_login_id === userId);
+//     if (userId != null && typeof customer != "undefined") {
+//         location.href = 'home.html';
+//     } else if (userId != null && typeof employee != "undefined") {
+//         location.href = 'staffHome.html'
+//     } else {
+//         logout();
+//     }
+// }
 
 //Logout
 function logout() {
     sessionStorage.clear();
-    location.href = 'index.html';
+    openLoginPage();
 }
 //================================================================================================================================================================//
 //================================================================================================================================================================//
@@ -379,19 +381,19 @@ function openCustomerDetails() {
     let customer = customerData.find(customer => customer.cust_login_id === userId);
         console.log(customer);
     if (userId != null && typeof customer != "undefined") {
-        document.getElementById("welcomeArea").innerHTML = "<h3> Welcome " + customer.cust_name + "!</h3>";
-        document.getElementById("userInfo1").innerHTML = "<p> Aadhar Number: " + customer.aadhar + "</p>";            
-        document.getElementById("userInfo2").innerHTML = "<p> Pan Number: " + customer.pan + "</p>";
+        document.getElementById("welcomeAreaCustHome").innerHTML = "<h3> Welcome " + customer.cust_name + "!</h3>";
+        document.getElementById("userInfo1CustHome").innerHTML = "<p> Aadhar Number: " + customer.aadhar + "</p>";            
+        document.getElementById("userInfo2CustHome").innerHTML = "<p> Pan Number: " + customer.pan + "</p>";
         let bank = getBankDetails(customer.bank_id);
-        document.getElementById("userInfo3").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";  
-        document.getElementById("userInfo4").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";   
+        document.getElementById("userInfo3CustHome").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";  
+        document.getElementById("userInfo4CustHome").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";   
         let account = getAccountDetails(customer.cust_id);   
-        document.getElementById("userInfo5").innerHTML = "<p> Account Number: " + account.account_num + "</p>";
+        document.getElementById("userInfo5CustHome").innerHTML = "<p> Account Number: " + account.account_num + "</p>";
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }
-    document.getElementById("userInfo").style.display = "";
+    document.getElementById("userInfoCustHome").style.display = "";
     document.getElementById("trasferMoney").style.display = "none";
     document.getElementById("showBalanceDiv").style.display = "none";
     document.getElementById("transactionHistoryDiv").style.display = "none";
@@ -410,10 +412,10 @@ function openCustomerShowBalance() {
         let account = getAccountDetails(customer.cust_id);   
         document.getElementById("balanceAvailableField").innerHTML = "<p> ₹ " + account.amount + "</p>";
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }
-    document.getElementById("userInfo").style.display = "none";
+    document.getElementById("userInfoCustHome").style.display = "none";
     document.getElementById("trasferMoney").style.display = "none";
     document.getElementById("showBalanceDiv").style.display = "";
     document.getElementById("transactionHistoryDiv").style.display = "none";
@@ -432,10 +434,10 @@ function openCustomerInfoTab() {
         document.getElementById("userPhoneNumField").innerHTML = "<p> Phone: " + customer.phone + "</p>";
         document.getElementById("userAddressField").innerHTML = "<p> Address: " + customer.address + "</p>";        
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }    
-    document.getElementById("userInfo").style.display = "none";
+    document.getElementById("userInfoCustHome").style.display = "none";
     document.getElementById("trasferMoney").style.display = "none";
     document.getElementById("showBalanceDiv").style.display = "none";
     document.getElementById("transactionHistoryDiv").style.display = "none";
@@ -455,7 +457,7 @@ function showEditFields() {
         document.getElementById("phoneField").value = customer.phone;
         document.getElementById("addressField").value = customer.address;
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }  
     document.getElementById("custInfo").style.display = "none";
@@ -507,7 +509,7 @@ function editInfo() {
             msgDiv.innerHTML = "<p style=color:green>User Updated Successfully!</p>";
         }
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }
 }
@@ -521,7 +523,7 @@ function openCustomerTransactions() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        document.getElementById("userInfo").style.display = "none";
+        document.getElementById("userInfoCustHome").style.display = "none";
         document.getElementById("trasferMoney").style.display = "none";
         document.getElementById("showBalanceDiv").style.display = "none";
         document.getElementById("transactionHistoryDiv").style.display = "";
@@ -535,7 +537,7 @@ function openCustomerTransactions() {
             out = "<table> \
                 <tr> \
                         <th>Date | Time</th> \
-                        <th>From Account Number	</th> \
+                        <th>From Account Number </th> \
                         <th>To Account Number</th> \
                         <th>Amount Transferred</th> \
                         <th>Balance</th> \
@@ -560,7 +562,7 @@ function openCustomerTransactions() {
             document.getElementById("custTransactionHistoryDiv").innerHTML = out;
         }
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();
     }
 }
@@ -574,15 +576,15 @@ function openCustomerTransferFund() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        document.getElementById("userInfo").style.display = "none";
+        document.getElementById("userInfoCustHome").style.display = "none";
         document.getElementById("trasferMoney").style.display = "";
         document.getElementById("getAccNumDiv").style.display = "";
         document.getElementById("validateAccNumBtn").style.display = "none";
 
-        document.getElementById("msgForUser").innerHTML = "";
-        document.getElementById("accNumField").value = "";
-        document.getElementById("moneyfield").value = "";
-        document.getElementById("notefield").value = "";
+        document.getElementById("msgForUserCustHome").innerHTML = "";
+        document.getElementById("accNumFieldCustHome").value = "";
+        document.getElementById("moneyfieldCustHome").value = "";
+        document.getElementById("notefieldCustHome").value = "";
 
         document.getElementById("transferFundDiv").style.display = "none";
         document.getElementById("showBalanceDiv").style.display = "none";
@@ -590,7 +592,7 @@ function openCustomerTransferFund() {
         document.getElementById("myInfoDiv").style.display = "none";
 
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear(); 
     } 
 }
@@ -601,8 +603,8 @@ function validateAccountNumberForTransfer() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumField").value.trim();
-        let msgDiv = document.getElementById("msgForUser");
+        var accNum = document.getElementById("accNumFieldCustHome").value.trim();
+        let msgDiv = document.getElementById("msgForUserCustHome");
         if (accNum === "") {
             msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
@@ -618,11 +620,11 @@ function validateAccountNumberForTransfer() {
             } else {
                 document.getElementById("getAccNumDiv").style.display = "none";
                 document.getElementById("transferFundDiv").style.display = "";
-                document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be transferred to: " + accNum;
+                document.getElementById("accNumToBeSentCustHome").innerHTML = "Enter the amount to be transferred to: " + accNum;
             }
         }
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear(); 
     }
 }
@@ -633,10 +635,10 @@ function transferFund() {
     var userId = JSON.parse(userIdJSON);
     let customer = customerData.find(customer => customer.cust_login_id === userId);
     if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumField").value.trim();
-        var amount = document.getElementById("moneyfield").value.trim();
-        var note = document.getElementById("notefield").value.trim();
-        let msgDiv = document.getElementById("msgForUser");
+        var accNum = document.getElementById("accNumFieldCustHome").value.trim();
+        var amount = document.getElementById("moneyfieldCustHome").value.trim();
+        var note = document.getElementById("notefieldCustHome").value.trim();
+        let msgDiv = document.getElementById("msgForUserCustHome");
         if (accNum === "") {
             msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
         } else if (isNaN(accNum)) {
@@ -694,11 +696,10 @@ function transferFund() {
             }
         }
     } else {
-        location.href = 'index.html';  
+        openLoginPage();  
         sessionStorage.clear();         
     }
 }
-
 
 //================================================================================================================================================================//
 //================================================================================================================================================================//
@@ -733,7 +734,7 @@ function openEmployeeDetails() {
         document.getElementById("userInfo2").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";
         document.getElementById("userInfo3").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
     document.getElementById("userInfo").style.display = "";
@@ -789,7 +790,7 @@ function openViewAllCustomers() {
             document.getElementById("allCustTable").innerHTML = out;
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
     document.getElementById("userInfo").style.display = "none";
@@ -821,7 +822,7 @@ function openAddMoney() {
         document.getElementById("withdrawMoneyDiv").style.display = "none";
         document.getElementById("viewAllCustomersDiv").style.display = "none";
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();        
     } 
 }
@@ -851,7 +852,7 @@ function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, oper
             }
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();        
     }
 }
@@ -909,7 +910,7 @@ function addMoney() {
             }
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
 }
@@ -937,7 +938,7 @@ function openWithdrawMoney() {
         document.getElementById("moneyDivForWithdraw").style.display = "none";
         document.getElementById("viewAllCustomersDiv").style.display = "none";
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();        
     }
 }
@@ -999,7 +1000,7 @@ function withdrawMoney() {
             }
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();    
     }
 }
@@ -1042,7 +1043,7 @@ function openViewAllStaffs() {
                 document.getElementById("listAllStaffsDiv").innerHTML = out;
             }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
     document.getElementById("userInfo").style.display = "none";
@@ -1075,7 +1076,7 @@ function openManagerAddStaffs() {
         document.getElementById("nameOfStaffToBeAdded").value = "";
         document.getElementById("passwordOfStaffToBeAdded").value = ""; 
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
 }
@@ -1100,7 +1101,7 @@ function validateStaffToAdd() {
             document.getElementById("staffIDFromTextHeading").innerHTML = "Enter the other details to create the staff with login id: " + newStaffID;
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }
 }
@@ -1164,7 +1165,7 @@ function openManagerDeleteStaffs() {
         document.getElementById("msgForUserInDeleteStaff").innerHTML = "";
         document.getElementById("staffToDeleteIDfield").value = "";
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();        
     }
 }
@@ -1195,7 +1196,7 @@ function validateStaffToDelete() {
             }
         } 
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }   
 }
@@ -1228,7 +1229,7 @@ function deleteStaff() {
             }
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }  
 }
@@ -1271,7 +1272,7 @@ function openBankWideTransactions() {
             document.getElementById("listAllTransactions").innerHTML = out;
         }
     } else {
-        location.href = 'index.html';
+        openLoginPage();
         sessionStorage.clear();
     }  
 }
@@ -1491,13 +1492,15 @@ function openCustomerHomePage() {
     document.getElementById("signUpPageDiv").style.display = "none";
     document.getElementById("customerHomePageDiv").style.display = "";
     document.getElementById("staffHomePageDiv").style.display = "none";   
+    openCustomerDetails();
 }
 
 function openStaffHomePage() {
     document.getElementById("loginPageDiv").style.display = "none";
     document.getElementById("signUpPageDiv").style.display = "none";
     document.getElementById("customerHomePageDiv").style.display = "none";
-    document.getElementById("staffHomePageDiv").style.display = "";      
+    document.getElementById("staffHomePageDiv").style.display = "";   
+    openEmployeeDetails();   
 }
 
 //================================================================================================================================================================//

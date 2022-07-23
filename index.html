@@ -8,7 +8,7 @@
     <body>
     <center>
         <h1>Welcome to Bank Application!</h1>
-            <!-- Login For Customer -->
+        <!-- Login For Customer -->
         <div id="loginPageDiv">
             <div id="loginDivision">
                 <h3>CUSTOMER LOGIN</h3>
@@ -79,10 +79,265 @@
                 <button id="goBackLoginSignUp" class="btn2" onclick=openLoginPage()>Go to Login</button>
             </div>
         </div>
+        <!-- Customer Home -->
+        <div id="customerHomePageDiv" style="display: none;">
+            <div id="userFunctions" class="btn-group" style="width:100%;">
+                <button id="HomeBtn" style="width:16.6%" onclick="openCustomerDetails()">Home</button>
+                <button style="width:16.6%" onclick="openCustomerTransferFund()">Transfer Money</button>
+                <button style="width:16.6%" onclick="openCustomerShowBalance()">Show Balance</button>
+                <button style="width:16.6%" onclick="openCustomerTransactions()">Transaction History</button>
+                <button style="width:16.6%" onclick="openCustomerInfoTab()">Edit Info</button>
+                <button style="width:16.6%" onclick="logout()">Logout</button>
+            </div>
+        
+            <div id="userInfoCustHome" style="display: none">
+                <br>
+                <div id="welcomeAreaCustHome">
+                </div>
+                <br>
+                <div id="mainDisplay">
+                    <p id="userInfo1CustHome"></p>
+                    <p id="userInfo2CustHome"></p>
+                    <p id="userInfo3CustHome"></p>
+                    <p id="userInfo4CustHome"></p>
+                    <p id="userInfo5CustHome"></p>
+                </div> <br>
+            </div>
+        
+            <div id="trasferMoney" style="display: none ">
+                <h3>Transfer Money</h3>
+                <div id="getAccNumDiv">
+                    <h4>Enter the account number to which the amount has to be transferred</h4>
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumFieldCustHome"
+                        autocomplete="off" placeholder="Enter the account number to be transffered"
+                        onkeydown="limitAccNum(this, 'msgForUserCustHome', 'validateAccNumBtn');"
+                        onkeyup="limitAccNum(this, 'msgForUserCustHome', 'validateAccNumBtn');"
+                        onkeypress="return onlyNumberKey(event)">
+                    <br>
+                    <br>
+                    <button id="validateAccNumBtn" style="display: none" class="block"
+                        onclick="validateAccountNumberForTransfer()">Next >>> </button>
+                </div>
+                <div id="transferFundDiv" style="display: none">
+                    <h4 id="accNumToBeSentCustHome"></h4>
+                    <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfieldCustHome"
+                        autocomplete="off" placeholder="Enter amount to be transferred"
+                        onkeydown="limit(this, 'msgForUserCustHome');" onkeyup="limit(this, 'msgForUserCustHome');"
+                        onkeypress="return onlyNumberKey(event)">
+                    <br>
+                    <br>
+                    <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="notefieldCustHome"
+                        autocomplete="off" placeholder="Enter the note for reference">
+                    <br>
+                    <br>
+                    <button class="block" onclick="transferFund()">Transfer Funds + </button>
+                </div>
+                <div id="msgForUserCustHome"></div>
+            </div>
+        
+            <div id="showBalanceDiv" style="display: none">
+                <h3>Balance Available</h3>
+                <p id="balanceAvailableField" style="font-size:72px;"> </p>
+            </div>
+        
+            <div id="transactionHistoryDiv" style="display: none">
+                <h3>History of your Transactions</h3>
+                <div id="custTransactionHistoryDiv">
+                    <!--Data from json-->
+                </div>
+            </div>
+        
+            <div id="myInfoDiv" style="display: none">
+                <h3>Your Info</h3>
+                <div id="custInfo">
+                    <br>
+                    <p id="userPhoneNumField"></p> <br>
+                    <p id="userAddressField"></p> <br>
+                    <button id="makeEdit" class="btn2" onclick="showEditFields()">Click here to edit Info</button>
+                </div>
+                <div id="editDetails" style="display:none">
+                    <h4>Modify the fields to be updated</h4>
+        
+                    <br> Password: <input style="width: 200px;" type="password" id="passField" value=""
+                        placeholder="Enter password to be updated" autocomplete="off" />
+        
+                    <input type="checkbox" onclick="showPassword()">
+                    <br>
+        
+                    <br> Phone: <input style="width: 200px;" type="text" id="phoneField" value=""
+                        onkeypress="return onlyNumberKey(event)" placeholder="Enter phone to be updated" autocomplete="off" />
+                    <br>
+        
+                    <br> Address: <input style="width: 200px;" type="text" id="addressField" value=""
+                        placeholder="Enter address to be updated" autocomplete="off" /> <br>
+        
+                    <br>
+                    <button id="submitBtn" class="btn" onclick="editInfo()">Update</button>
+                </div>
+                <div id="displayMsg"></div>
+            </div>
+        </div>
+        <!-- Staff Home -->
+        <div id="staffHomePageDiv" style="display: none;">
+            <div id="bankStaffFunctions" style="display: none">
+                <div id="userFunctions" class="btn-group" style="width:100%;">
+                    <button id="HomeBtn" style="width:20%" onclick="openEmployeeDetails()">Home</button>
+                    <button style="width:20%" onclick="openAddMoney()">Add Money</button>
+                    <button style="width:20%" onclick="openWithdrawMoney()">Withdraw Money</button>
+                    <button style="width:20%" onclick="openViewAllCustomers()">View All Customers</button>
+                    <button style="width:20%" onclick="logout()">Logout</button>
+                </div>
+                <div id="addMoneyDiv" style="display: none">
+                    <h3>Deposit Money</h3>
+                    <div id="getAccNumDivForAdd">
+                        <h4>Enter the account number of the customer to which the amount has to be deposited</h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="accNumField"
+                            placeholder="Enter the account number to be deposited" autocomplete="off"
+                            onkeydown="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');"
+                            onkeyup="limitAccNum(this, 'msgForUser', 'validateAccNumBtn1');"
+                            onkeypress="return onlyNumberKey(event)">
+                        <br>
+                        <br>
+                        <button id="validateAccNumBtn1" style="display: none" class="block"
+                            onclick="validateCustomerAccountNumber('accNumField', 'msgForUser', 'getAccNumDivForAdd', 'moneyDivForAdd', 'added to')">Next
+                            >>> </button>
+                    </div>
+                    <div id="moneyDivForAdd" style="display: none">
+                        <h4 id="accNumToBeSent"></h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="moneyfield"
+                            placeholder="Enter amount to be deposited" autocomplete="off" onkeydown="limit(this, 'msgForUser');"
+                            onkeyup="limit(this, 'msgForUser');" onkeypress="return onlyNumberKey(event)">
+                        <br>
+                        <br>
+                        <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="notefield"
+                            placeholder="Enter the note for reference" autocomplete="off">
+                        <br>
+                        <br>
+                        <button class="block" onclick="addMoney()">Add Money + </button>
+                    </div>
+                    <div id="msgForUser"></div>
+                </div>
+        
+                <div id="withdrawMoneyDiv" style="display: none">
+                    <h3>Withdraw Money</h3>
+                    <div id="getAccNumDivForWithdraw">
+                        <h4>Enter the account number of the customer to which the amount has to be withdrawn</h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text"
+                            id="accNumFieldForWithdraw" placeholder="Enter the account number to be withdrawn"
+                            onkeydown="limitAccNum(this, 'msgForUserForWithdraw', 'validateAccNumBtn2');"
+                            onkeyup="limitAccNum(this, 'msgForUserForWithdraw', 'validateAccNumBtn2');"
+                            onkeypress="return onlyNumberKey(event)" autocomplete="off">
+                        <br>
+                        <br>
+                        <button id="validateAccNumBtn2" style="display: none" class="block"
+                            onclick="validateCustomerAccountNumber('accNumFieldForWithdraw', 'msgForUserForWithdraw', 'getAccNumDivForWithdraw', 'moneyDivForWithdraw', 'withdrawn from')">Next
+                            >>> </button>
+                    </div>
+                    <div id="moneyDivForWithdraw" style="display: none">
+                        <h4>Enter the amount to be withdrawn</h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text"
+                            id="moneyfieldForWithdraw" placeholder="Enter amount to be withdrawn"
+                            onkeydown="limit(this, 'msgForUserForWithdraw');" onkeyup="limit(this, 'msgForUserForWithdraw');"
+                            onkeypress="return onlyNumberKey(event)" autocomplete="off">
+                        <br>
+                        <br>
+                        <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="notefieldForWithdraw"
+                            placeholder="Enter the note for reference" autocomplete="off">
+                        <br>
+                        <br>
+                        <button class="block" onclick="withdrawMoney()">Withdraw Money - </button>
+                    </div>
+                    <div id="msgForUserForWithdraw"></div>
+                </div>
+        
+                <div id="viewAllCustomersDiv" style="display: none">
+                    <h3>List of the all the customers in our Bank Branch</h3>
+                    <div id="allCustTable">
+                        <!--Table from json-->
+                    </div>
+                </div>
+            </div>
+            <div id="bankManagerFunctions" style="display: none">
+                <div id="userFunctions" class="btn-group" style="width:100%;">
+                    <button id="HomeBtn" style="width:16.6%" onclick="openEmployeeDetails()">Home</button>
+                    <button style="width:16.6%" onclick="openManagerAddStaffs()">Add Staff</button>
+                    <button style="width:16.6%" onclick="openManagerDeleteStaffs()">Remove Staff</button>
+                    <button style="width:16.6%" onclick="openViewAllStaffs()">View All Staff</button>
+                    <button style="width:16.6%" onclick="openBankWideTransactions()">Bank Wide Transactions</button>
+                    <button style="width:16.6%" onclick="logout()">Logout</button>
+                </div>
+                <div id="addNewStaffDiv" style="display: none">
+                    <h3>Add New Staff</h3>
+                    <div id="getUserNameToAddDiv">
+                        <h4>Enter the login ID for the staff to be added</h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="staffLoginIDfield"
+                            placeholder="Enter the login ID to be created for the staff"
+                            onkeyup="validateLogin('staffLoginIDfield', 'msgForUserInAddStaff', 'checkIfStaffIdExistBtn');"
+                            autocomplete="off">
+                        <br>
+                        <br>
+                        <button id="checkIfStaffIdExistBtn" style="display: none" class="block"
+                            onclick="validateStaffToAdd()">Next
+                            >>>
+                        </button>
+                    </div>
+                    <div id="staffDetailsToAddDiv" style="display: none">
+                        <h4 id="staffIDFromTextHeading"></h4>
+                        <input style="width: 75%; padding: 7px 0px; text-align: center;" type="text" id="nameOfStaffToBeAdded"
+                            placeholder="Enter the name of the staff to be added" autocomplete="off">
+                        <br>
+                        <br>
+                        <input style="width: 75%; padding: 7px 0px; text-align: center;" type="password"
+                            id="passwordOfStaffToBeAdded" placeholder="Enter the password for the staff's account"
+                            autocomplete="off">
+                        <br>
+                        <br>
+                        <button class="block" onclick="addStaff()">Add Staff</button>
+                    </div>
+                    <div id="msgForUserInAddStaff"></div>
+                </div>
+                <div id="deleteStaffDiv" style="display: none">
+                    <h3>Delete Staff</h3>
+                    <div id="getUserNameToDeleteDiv">
+                        <h4>Enter the login ID for the staff to be deleted</h4>
+                        <input style="width: 100%; padding: 14px 0px; text-align: center;" type="text" id="staffToDeleteIDfield"
+                            placeholder="Enter the login ID of the user to be deleted"
+                            onkeyup="validateLogin('staffToDeleteIDfield', 'msgForUserInDeleteStaff', 'checkIfStaffExistBtn');"
+                            autocomplete="off">
+                        <br>
+                        <br>
+                        <button id="checkIfStaffExistBtn" style="display: none" class="block"
+                            onclick="validateStaffToDelete()">Verify</button>
+                    </div>
+                    <div id="empDetails" style="display: none"></div>
+                    <button id="deleteStaffBtn" style="display: none" class="block" onclick="deleteStaff()">Delete</button>
+                    <div id="msgForUserInDeleteStaff"></div>
+                </div>
+                <div id="viewAllStaffsDiv" style="display: none">
+                    <h3>List of the all the employees in our Bank Branch</h3>
+                    <div id="listAllStaffsDiv">
+                        <!--Data from json-->
+                    </div>
+                </div>
+                <div id="bankWideTransactionsDiv" style="display: none">
+                    <h3>History of the Bank wide Transactions</h3>
+                    <div id="listAllTransactions">
+                        <!--Data from json-->
+                    </div>
+                </div>
+            </div>
+            <div id="userInfo" style="display: none">
+                <br>
+                <div id="welcomeArea"></div>
+                <br>
+                <div id="mainDisplay">
+                    <p id="userInfo1"> </p>
+                    <p id="userInfo2"> </p>
+                    <p id="userInfo3"> </p>
+                </div> <br>
+            </div>
+        </div>
     </center>
     <script src="js/main.js"></script>
-    <script>
-        window.onload = isUserLoggedIn();
-    </script>
     </body>
 </html>

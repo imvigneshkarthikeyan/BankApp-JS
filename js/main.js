@@ -365,24 +365,24 @@ function logout() {
 //================================================================================================================================================================//
                             //Customer Home TAB//
 //================================================================================================================================================================//
+function isUserCustomer(userId, customer) {
+    return userId != null && typeof customer != "undefined";  
+}
+
 //Customer Home
 function openCustomerDetails() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-        console.log(customer);
-    if (userId != null && typeof customer != "undefined") {
-        document.getElementById("welcomeAreaCustHome").innerHTML = "<h3> Welcome " + customer.cust_name + "!</h3>";
-        document.getElementById("userInfo1CustHome").innerHTML = "<p> Aadhar Number: " + customer.aadhar + "</p>";            
-        document.getElementById("userInfo2CustHome").innerHTML = "<p> Pan Number: " + customer.pan + "</p>";
-        let bank = getBankDetails(customer.bank_id);
-        document.getElementById("userInfo3CustHome").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";  
-        document.getElementById("userInfo4CustHome").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";   
-        let account = getAccountDetails(customer.cust_id);   
-        document.getElementById("userInfo5CustHome").innerHTML = "<p> Account Number: " + account.account_num + "</p>";
-    } else {
-        openLoginPage();  
-        sessionStorage.clear();
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId,customer)) {
+            fetchAndDisplayCustomerDetails(customer);
+        } else {
+            throw new Error('Invalid User!');
+        }
+    } catch (error) {
+        console.log(error);
+        logout();
     }
     document.getElementById("userInfoCustHome").style.display = "";
     document.getElementById("trasferMoney").style.display = "none";
@@ -391,20 +391,34 @@ function openCustomerDetails() {
     document.getElementById("myInfoDiv").style.display = "none";
 }
 
+function fetchAndDisplayCustomerDetails(customer) {
+    document.getElementById("welcomeAreaCustHome").innerHTML = "<h3> Welcome " + customer.cust_name + "!</h3>";
+    document.getElementById("userInfo1CustHome").innerHTML = "<p> Aadhar Number: " + customer.aadhar + "</p>";            
+    document.getElementById("userInfo2CustHome").innerHTML = "<p> Pan Number: " + customer.pan + "</p>";
+    let bank = getBankDetails(customer.bank_id);
+    document.getElementById("userInfo3CustHome").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";  
+    document.getElementById("userInfo4CustHome").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";   
+    let account = getAccountDetails(customer.cust_id);   
+    document.getElementById("userInfo5CustHome").innerHTML = "<p> Account Number: " + account.account_num + "</p>";
+}
+
 //================================================================================================================================================================//
                             //Customer Show Balance TAB//
 //================================================================================================================================================================//
 //Customer Show Balance
 function openCustomerShowBalance() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        let account = getAccountDetails(customer.cust_id);   
-        document.getElementById("balanceAvailableField").innerHTML = "<p> ₹ " + account.amount + "</p>";
-    } else {
-        openLoginPage();  
-        sessionStorage.clear();
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            fetchAndDisplayCustomerBalance(customer);
+        } else {
+            throw new Error('Invalid User!');
+        }
+    } catch (error) {
+        console.log(error);
+        logout();
     }
     document.getElementById("userInfoCustHome").style.display = "none";
     document.getElementById("trasferMoney").style.display = "none";
@@ -413,21 +427,30 @@ function openCustomerShowBalance() {
     document.getElementById("myInfoDiv").style.display = "none";
 }
 
+function fetchAndDisplayCustomerBalance(customer) {
+    let account = getAccountDetails(customer.cust_id);   
+    document.getElementById("balanceAvailableField").innerHTML = "<p> ₹ " + account.amount + "</p>";
+}
+
 //================================================================================================================================================================//
                             //Customer Edit Info TAB//
 //================================================================================================================================================================//
 //Open Customer Edit Info Tab
 function openCustomerInfoTab() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        document.getElementById("userPhoneNumField").innerHTML = "<p> Phone: " + customer.phone + "</p>";
-        document.getElementById("userAddressField").innerHTML = "<p> Address: " + customer.address + "</p>";        
-    } else {
-        openLoginPage();  
-        sessionStorage.clear();
-    }    
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            document.getElementById("userPhoneNumField").innerHTML = "<p> Phone: " + customer.phone + "</p>";
+            document.getElementById("userAddressField").innerHTML = "<p> Address: " + customer.address + "</p>";        
+        } else {
+            throw new Error('Invalid User!');
+        }
+    } catch (error) {
+        console.log(error);
+        logout();
+    }   
     document.getElementById("userInfoCustHome").style.display = "none";
     document.getElementById("trasferMoney").style.display = "none";
     document.getElementById("showBalanceDiv").style.display = "none";
@@ -441,16 +464,20 @@ function openCustomerInfoTab() {
 //Fetch Other details and show edit text box
 function showEditFields() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        document.getElementById("passField").value = customer.cust_pass;
-        document.getElementById("phoneField").value = customer.phone;
-        document.getElementById("addressField").value = customer.address;
-    } else {
-        openLoginPage();  
-        sessionStorage.clear();
-    }  
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            document.getElementById("passField").value = customer.cust_pass;
+            document.getElementById("phoneField").value = customer.phone;
+            document.getElementById("addressField").value = customer.address;
+        } else {
+            throw new Error('Invalid User!');
+        }    
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
     document.getElementById("custInfo").style.display = "none";
     document.getElementById("editDetails").style.display = "";
 }
@@ -468,40 +495,48 @@ function showPassword() {
 //Edit Customer Information function
 function editInfo() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        let msgDiv = document.getElementById("displayMsg");
-        var newUserPass = document.getElementById("passField").value;
-        var newUserPhone = document.getElementById("phoneField").value.trim();
-        var newUserAddress = document.getElementById("addressField").value.trim();
-        var oldPass = customer.cust_pass;
-        var oldPhone = customer.phone;
-        var oldAddress = customer.address;
-        if (newUserPass === "" || newUserPhone === "" || newUserAddress === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please fill all the details to be updated</p>";
-        } else if (oldPass === newUserPass && oldPhone === newUserPhone && oldAddress === newUserAddress) {
-            msgDiv.innerHTML = "<p style=color:red>Please modify atleast one field to updated</p>";
-        } else if (newUserPass.length < 3 || newUserPass.length > 16) {
-            msgDiv.innerHTML = "<p style=color:red>The Password should be minimum 3 characters and maximum 16 characters</p>";
-        } else if(isNaN(newUserPhone)){
-            msgDiv.innerHTML = "<p style=color:red>Don't enter text, Please enter a valid mobile number.</p>";
-        } else if (newUserPhone.length != 10) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter 10 digit Mobile number.</p>";
-        } else if (newUserAddress.length < 3 || newUserAddress.length > 50) {
-            msgDiv.innerHTML = "<p style=color:red>The Address should be minimum 3 characters and maximum 50 characters</p>";
-        } else if (customerData.some(customer => customer.phone === newUserPhone) && oldPhone!=newUserPhone) {
-            msgDiv.innerHTML = "<p style=color:red>This phone number already exists</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (userId != null && typeof customer != "undefined") {
+            validateAndUpdateCustomerData(customer);
         } else {
-            customer.cust_pass = newUserPass;
-            customer.phone = newUserPhone;
-            customer.address = newUserAddress;
-            document.getElementById("editDetails").style.display = "none";
-            msgDiv.innerHTML = "<p style=color:green>User Updated Successfully!</p>";
+            throw new Error('Invalid User!');
         }
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
+}
+
+function validateAndUpdateCustomerData(customer) {
+    let msgDiv = document.getElementById("displayMsg");
+    var newUserPass = document.getElementById("passField").value;
+    var newUserPhone = document.getElementById("phoneField").value.trim();
+    var newUserAddress = document.getElementById("addressField").value.trim();
+    var oldPass = customer.cust_pass;
+    var oldPhone = customer.phone;
+    var oldAddress = customer.address;
+    if (newUserPass === "" || newUserPhone === "" || newUserAddress === "") {
+        msgDiv.innerHTML = "<p style=color:red>Please fill all the details to be updated</p>";
+    } else if (oldPass === newUserPass && oldPhone === newUserPhone && oldAddress === newUserAddress) {
+        msgDiv.innerHTML = "<p style=color:red>Please modify atleast one field to updated</p>";
+    } else if (newUserPass.length < 3 || newUserPass.length > 16) {
+        msgDiv.innerHTML = "<p style=color:red>The Password should be minimum 3 characters and maximum 16 characters</p>";
+    } else if(isNaN(newUserPhone)){
+        msgDiv.innerHTML = "<p style=color:red>Don't enter text, Please enter a valid mobile number.</p>";
+    } else if (newUserPhone.length != 10) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter 10 digit Mobile number.</p>";
+    } else if (newUserAddress.length < 3 || newUserAddress.length > 50) {
+        msgDiv.innerHTML = "<p style=color:red>The Address should be minimum 3 characters and maximum 50 characters</p>";
+    } else if (customerData.some(customer => customer.phone === newUserPhone) && oldPhone!=newUserPhone) {
+        msgDiv.innerHTML = "<p style=color:red>This phone number already exists</p>";
     } else {
-        openLoginPage();  
-        sessionStorage.clear();
+        customer.cust_pass = newUserPass;
+        customer.phone = newUserPhone;
+        customer.address = newUserAddress;
+        document.getElementById("editDetails").style.display = "none";
+        msgDiv.innerHTML = "<p style=color:green>User Updated Successfully!</p>";
     }
 }
 
@@ -553,8 +588,7 @@ function openCustomerTransactions() {
             document.getElementById("custTransactionHistoryDiv").innerHTML = out;
         }
     } else {
-        openLoginPage();  
-        sessionStorage.clear();
+        logout();
     }
 }
 
@@ -583,8 +617,7 @@ function openCustomerTransferFund() {
         document.getElementById("myInfoDiv").style.display = "none";
 
     } else {
-        openLoginPage();  
-        sessionStorage.clear(); 
+        logout();
     } 
 }
 
@@ -615,8 +648,7 @@ function validateAccountNumberForTransfer() {
             }
         }
     } else {
-        openLoginPage();  
-        sessionStorage.clear(); 
+        logout();
     }
 }
 
@@ -649,6 +681,8 @@ function transferFund() {
                     msgDiv.innerHTML = "<p style=color:red>Please enter valid amount, don't enter characters.</p>";
                 } else if (fromAccount.amount < amount) {
                     msgDiv.innerHTML = "<p style=color:red>Try entering value less than your balance. Your Balance is " + fromAccount.amount + "</p>"
+                } else if (amount < 1) {
+                    msgDiv.innerHTML = "<p style=color:red>The minimum transaction is ₹1</p>"
                 } else if (1000000 < amount) {
                     msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>"
                 } else if (note.length > 20) {
@@ -687,8 +721,7 @@ function transferFund() {
             }
         }
     } else {
-        openLoginPage();  
-        sessionStorage.clear();         
+        logout();         
     }
 }
 
@@ -725,8 +758,7 @@ function openEmployeeDetails() {
         document.getElementById("userInfo2").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";
         document.getElementById("userInfo3").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
     document.getElementById("userInfo").style.display = "";
     document.getElementById("addMoneyDiv").style.display = "none";
@@ -781,8 +813,7 @@ function openViewAllCustomers() {
             document.getElementById("allCustTable").innerHTML = out;
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
     document.getElementById("userInfo").style.display = "none";
     document.getElementById("addMoneyDiv").style.display = "none";
@@ -813,8 +844,7 @@ function openAddMoney() {
         document.getElementById("withdrawMoneyDiv").style.display = "none";
         document.getElementById("viewAllCustomersDiv").style.display = "none";
     } else {
-        openLoginPage();
-        sessionStorage.clear();        
+        logout();        
     } 
 }
 
@@ -843,8 +873,7 @@ function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, oper
             }
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();        
+        logout();        
     }
 }
 
@@ -901,8 +930,7 @@ function addMoney() {
             }
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
 }
 
@@ -929,8 +957,7 @@ function openWithdrawMoney() {
         document.getElementById("moneyDivForWithdraw").style.display = "none";
         document.getElementById("viewAllCustomersDiv").style.display = "none";
     } else {
-        openLoginPage();
-        sessionStorage.clear();        
+        logout();        
     }
 }
 
@@ -991,8 +1018,7 @@ function withdrawMoney() {
             }
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();    
+        logout();    
     }
 }
 
@@ -1034,8 +1060,7 @@ function openViewAllStaffs() {
                 document.getElementById("listAllStaffsDiv").innerHTML = out;
             }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
     document.getElementById("userInfo").style.display = "none";
     document.getElementById("viewAllStaffsDiv").style.display = "";
@@ -1067,8 +1092,7 @@ function openManagerAddStaffs() {
         document.getElementById("nameOfStaffToBeAdded").value = "";
         document.getElementById("passwordOfStaffToBeAdded").value = ""; 
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
 }
 
@@ -1092,8 +1116,7 @@ function validateStaffToAdd() {
             document.getElementById("staffIDFromTextHeading").innerHTML = "Enter the other details to create the staff with login id: " + newStaffID;
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }
 }
 
@@ -1156,8 +1179,7 @@ function openManagerDeleteStaffs() {
         document.getElementById("msgForUserInDeleteStaff").innerHTML = "";
         document.getElementById("staffToDeleteIDfield").value = "";
     } else {
-        openLoginPage();
-        sessionStorage.clear();        
+        logout();        
     }
 }
 
@@ -1187,8 +1209,7 @@ function validateStaffToDelete() {
             }
         } 
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }   
 }
 
@@ -1220,8 +1241,7 @@ function deleteStaff() {
             }
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }  
 }
 
@@ -1263,8 +1283,7 @@ function openBankWideTransactions() {
             document.getElementById("listAllTransactions").innerHTML = out;
         }
     } else {
-        openLoginPage();
-        sessionStorage.clear();
+        logout();
     }  
 }
 

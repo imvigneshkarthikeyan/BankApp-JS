@@ -1301,87 +1301,106 @@ function validateAndAddStaff(employee) {
 //Open Delete Staff
 function openManagerDeleteStaffs() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        document.getElementById("bankStaffFunctions").style.display = "none";
-        document.getElementById("bankManagerFunctions").style.display = "";
-        document.getElementById("userInfo").style.display = "none";
-        document.getElementById("viewAllStaffsDiv").style.display = "none";
-        document.getElementById("bankWideTransactionsDiv").style.display = "none";
-        document.getElementById("addNewStaffDiv").style.display = "none";
-        document.getElementById("deleteStaffDiv").style.display = "";
-        document.getElementById("getUserNameToDeleteDiv").style.display = "";
-        document.getElementById("empDetails").style.display = "none";
-        document.getElementById("deleteStaffBtn").style.display = "none";
-        document.getElementById("addNewStaffDiv").style.display = "none";
-        document.getElementById("msgForUserInDeleteStaff").innerHTML = "";
-        document.getElementById("staffToDeleteIDfield").value = "";
-    } else {
-        logout();        
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            document.getElementById("bankStaffFunctions").style.display = "none";
+            document.getElementById("bankManagerFunctions").style.display = "";
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("viewAllStaffsDiv").style.display = "none";
+            document.getElementById("bankWideTransactionsDiv").style.display = "none";
+            document.getElementById("addNewStaffDiv").style.display = "none";
+            document.getElementById("deleteStaffDiv").style.display = "";
+            document.getElementById("getUserNameToDeleteDiv").style.display = "";
+            document.getElementById("empDetails").style.display = "none";
+            document.getElementById("deleteStaffBtn").style.display = "none";
+            document.getElementById("addNewStaffDiv").style.display = "none";
+            document.getElementById("msgForUserInDeleteStaff").innerHTML = "";
+            document.getElementById("staffToDeleteIDfield").value = "";
+        } else {
+            throw new Error('Invalid User!');        
+        }
+    } catch (error) {
+        console.log(error);
+        logout();
     }
 }
 
 //Validations for delete staff
 function validateStaffToDelete() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        let msgDiv = document.getElementById("msgForUserInDeleteStaff");
-        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
-        if (staffIdToDelete === "") {
-            msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
-        } else if (!validateEmail(staffIdToDelete)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
-        } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
-            msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
-        } else {
-            let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
-            if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
-                msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            let msgDiv = document.getElementById("msgForUserInDeleteStaff");
+            var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
+            if (staffIdToDelete === "") {
+                msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
+            } else if (!validateEmail(staffIdToDelete)) {
+                msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
+            } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
+                msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
             } else {
-                document.getElementById("getUserNameToDeleteDiv").style.display = "none";
-                document.getElementById("empDetails").style.display = "";
-                document.getElementById("deleteStaffBtn").style.display = "";
-                document.getElementById("empDetails").innerHTML = "<br><p> Login ID: " + staffIdToDelete + "</p><br><p> Name: " + employeeToDelete.emp_name + "</p><br>";
-            }
+                let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
+                if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
+                    msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
+                } else {
+                    document.getElementById("getUserNameToDeleteDiv").style.display = "none";
+                    document.getElementById("empDetails").style.display = "";
+                    document.getElementById("deleteStaffBtn").style.display = "";
+                    document.getElementById("empDetails").innerHTML = "<br><p> Login ID: " + staffIdToDelete + "</p><br><p> Name: " + employeeToDelete.emp_name + "</p><br>";
+                }
+            } 
+        } else {
+            throw new Error('Invalid User!');
         } 
-    } else {
+    } catch (error) {
+        console.log(error);
         logout();
-    }   
+    }  
 }
 
 //Delete Staff Function
 function deleteStaff() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        let msgDiv = document.getElementById("msgForUserInDeleteStaff");
-        var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
-        if (staffIdToDelete === "") {
-            msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
-        } else if (!validateEmail(staffIdToDelete)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
-        } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
-            msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            validateAndDeleteStaff(employee);
         } else {
-            let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
-            if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
-                msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
-            } else {
-                indexToRemove = employeeData.findIndex(employee => employee.emp_login_id === staffIdToDelete);
-                employeeData.splice(indexToRemove, 1);
-                document.getElementById("getUserNameToDeleteDiv").style.display = "none";
-                document.getElementById("empDetails").style.display = "none";
-                document.getElementById("deleteStaffBtn").style.display = "none";
-                msgDiv.innerHTML = "<p style=color:green>Staff Deleted Successfully!</p>";
-            }
-        }
-    } else {
+            throw new Error('Invalid User!');
+        }    
+    } catch (error) {
+        console.log(error);
         logout();
-    }  
+    }
+}
+
+function validateAndDeleteStaff(employee) {
+    let msgDiv = document.getElementById("msgForUserInDeleteStaff");
+    var staffIdToDelete = document.getElementById("staffToDeleteIDfield").value.trim();
+    if (staffIdToDelete === "") {
+        msgDiv.innerHTML = "<p style=color:red>Enter the user ID to be removed</p>";
+    } else if (!validateEmail(staffIdToDelete)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";    
+    } else if (!employeeData.some(employee => employee.emp_login_id === staffIdToDelete)) { 
+        msgDiv.innerHTML = "<p style=color:red>This ID doesn't exist, try different ID</p>";        
+    } else {
+        let employeeToDelete = employeeData.find(employee => employee.emp_login_id === staffIdToDelete);
+        if (employee.bank_id != employeeToDelete.bank_id || employeeToDelete.role_id==1) {
+            msgDiv.innerHTML = "<p style=color:red>You don't have access to delete this staff.</p>";                    
+        } else {
+            indexToRemove = employeeData.findIndex(employee => employee.emp_login_id === staffIdToDelete);
+            employeeData.splice(indexToRemove, 1);
+            document.getElementById("getUserNameToDeleteDiv").style.display = "none";
+            document.getElementById("empDetails").style.display = "none";
+            document.getElementById("deleteStaffBtn").style.display = "none";
+            msgDiv.innerHTML = "<p style=color:green>Staff Deleted Successfully!</p>";
+        }
+    }
 }
 
 //================================================================================================================================================================//
@@ -1390,40 +1409,49 @@ function deleteStaff() {
 //Open Bank Wide Transactions
 function openBankWideTransactions() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        document.getElementById("userInfo").style.display = "none";
-        document.getElementById("viewAllStaffsDiv").style.display = "none";
-        document.getElementById("bankWideTransactionsDiv").style.display = "";
-        document.getElementById("addNewStaffDiv").style.display = "none";
-        document.getElementById("deleteStaffDiv").style.display = "none";
-        let bankWideTransactions = transactionData.filter(transaction => transaction.bank_id === employee.bank_id).reverse();
-        if (bankWideTransactions.length === 0) {
-            document.getElementById("listAllTransactions").innerHTML = "<p> No Transactions till now</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            fetchAndDisplayBankWideTransactions(employee);
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("viewAllStaffsDiv").style.display = "none";
+            document.getElementById("bankWideTransactionsDiv").style.display = "";
+            document.getElementById("addNewStaffDiv").style.display = "none";
+            document.getElementById("deleteStaffDiv").style.display = "none";
         } else {
-            out = "<table> \
-                <tr> \
-                    <th>Date | Time</th> \
-                    <th>From Account Number	</th> \
-                    <th>To Account Number</th> \
-                    <th>Amount Transferred</th> \
-                    <th>Transaction Note</th> \
-                </tr>";
-                for (let i = 0; i < bankWideTransactions.length; i++) {
-                    out += "<tr><td>" + bankWideTransactions[i].date_time + "</td> \
-                            <td>" + bankWideTransactions[i].from_acc_no + "</td> \
-                            <td>" + bankWideTransactions[i].to_acc_no + "</td> \
-                            <td>" + bankWideTransactions[i].amount_transfered + "</td> \
-                            <td>" + bankWideTransactions[i].trans_note + "</td> \
-                        </tr>";
-                }
-            out += "</table>";
-            document.getElementById("listAllTransactions").innerHTML = out;
-        }
-    } else {
+            throw new Error('Invalid User!');
+        }  
+    } catch (error) {
+        console.log(error);
         logout();
-    }  
+    }
+}
+
+function fetchAndDisplayBankWideTransactions(employee) {
+    let bankWideTransactions = transactionData.filter(transaction => transaction.bank_id === employee.bank_id).reverse();
+    if (bankWideTransactions.length === 0) {
+        document.getElementById("listAllTransactions").innerHTML = "<p> No Transactions till now</p>";
+    } else {
+        out = "<table> \
+            <tr> \
+                <th>Date | Time</th> \
+                <th>From Account Number	</th> \
+                <th>To Account Number</th> \
+                <th>Amount Transferred</th> \
+                <th>Transaction Note</th> \
+            </tr>";
+            for (let i = 0; i < bankWideTransactions.length; i++) {
+                out += "<tr><td>" + bankWideTransactions[i].date_time + "</td> \
+                        <td>" + bankWideTransactions[i].from_acc_no + "</td> \
+                        <td>" + bankWideTransactions[i].to_acc_no + "</td> \
+                        <td>" + bankWideTransactions[i].amount_transfered + "</td> \
+                        <td>" + bankWideTransactions[i].trans_note + "</td> \
+                    </tr>";
+            }
+        out += "</table>";
+        document.getElementById("listAllTransactions").innerHTML = out;
+    }
 }
 
 //================================================================================================================================================================//

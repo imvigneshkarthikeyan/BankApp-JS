@@ -360,15 +360,13 @@ function logout() {
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
-
-
-//================================================================================================================================================================//
-                            //Customer Home TAB//
-//================================================================================================================================================================//
 function isUserCustomer(userId, customer) {
     return userId != null && typeof customer != "undefined";  
 }
 
+//================================================================================================================================================================//
+                            //Customer Home TAB//
+//================================================================================================================================================================//
 //Customer Home
 function openCustomerDetails() {
     var userIdJSON = sessionStorage.getItem("currentUser");
@@ -763,7 +761,13 @@ function validateAndTransferFund(customer) {
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
+function isUserBankStaff(userId, employee) {
+    return userId != null && typeof employee != "undefined" && employee.role_id == 2;  
+}
 
+function isUserBankManager(userId, employee) {
+    return userId != null && typeof employee != "undefined" && employee.role_id == 1;  
+}
 
 //================================================================================================================================================================//
                             //Employee Home TAB//
@@ -771,24 +775,19 @@ function validateAndTransferFund(customer) {
 //Employee Home
 function openEmployeeDetails() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-        console.log(employee);
-    if (userId != null && typeof employee != "undefined") {
-        document.getElementById("welcomeArea").innerHTML = "<h3> Welcome " + employee.emp_name + "!</h3>";
-        if (employee.role_id == 1) {
-            document.getElementById("bankManagerFunctions").style.display = "";
-            document.getElementById("bankStaffFunctions").style.display = "none";
-            document.getElementById("userInfo1").innerHTML = "<p> Role Name: Manager </p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+            console.log(employee);
+        if (isUserBankManager(userId, employee)) {
+            fetchAndDisplayBankManagerDetails(employee);
+        } else if (isUserBankStaff(userId, employee)) {
+            fetchAndDisplayBankStaffDetails(employee);
         } else {
-            document.getElementById("bankStaffFunctions").style.display = "";
-            document.getElementById("bankManagerFunctions").style.display = "none";
-            document.getElementById("userInfo1").innerHTML = "<p> Role Name: Staff </p>";
-        }
-        let bank = getBankDetails(employee.bank_id);
-        document.getElementById("userInfo2").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";
-        document.getElementById("userInfo3").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";
-    } else {
+            throw new Error('Invalid User!');
+        }   
+    } catch (error) {
+        console.log(error);
         logout();
     }
     document.getElementById("userInfo").style.display = "";
@@ -799,7 +798,26 @@ function openEmployeeDetails() {
     document.getElementById("bankWideTransactionsDiv").style.display = "none";
     document.getElementById("addNewStaffDiv").style.display = "none";
     document.getElementById("deleteStaffDiv").style.display = "none";
+}
 
+function fetchAndDisplayBankManagerDetails(employee) {
+    document.getElementById("welcomeArea").innerHTML = "<h3> Welcome " + employee.emp_name + "!</h3>";
+    document.getElementById("bankManagerFunctions").style.display = "";
+    document.getElementById("bankStaffFunctions").style.display = "none";
+    document.getElementById("userInfo1").innerHTML = "<p> Role Name: Manager </p>";
+    let bank = getBankDetails(employee.bank_id);
+    document.getElementById("userInfo2").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";
+    document.getElementById("userInfo3").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";
+}
+
+function fetchAndDisplayBankStaffDetails(employee) {
+    document.getElementById("welcomeArea").innerHTML = "<h3> Welcome " + employee.emp_name + "!</h3>";
+    document.getElementById("bankStaffFunctions").style.display = "";
+    document.getElementById("bankManagerFunctions").style.display = "none";
+    document.getElementById("userInfo1").innerHTML = "<p> Role Name: Staff </p>";  
+    let bank = getBankDetails(employee.bank_id);
+    document.getElementById("userInfo2").innerHTML = "<p> Bank Name: " + bank.bank_name + "</p>";
+    document.getElementById("userInfo3").innerHTML = "<p> Branch Name: " + bank.branch_name + "</p>";
 }
 
 //================================================================================================================================================================//
@@ -808,48 +826,57 @@ function openEmployeeDetails() {
 //View All Customers
 function openViewAllCustomers() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        document.getElementById("bankStaffFunctions").style.display = "";
-        document.getElementById("bankManagerFunctions").style.display = "none";
-        let customersOfThisBank = customerData.filter(customer => customer.bank_id === employee.bank_id);
-        if (customersOfThisBank.length === 0) {
-            document.getElementById("allCustTable").innerHTML = "<p> No customers till now</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            fetchAndDisplayAllCustomersInBank(employee);
         } else {
-            out = "<table> \
-            <tr> \
-                <th>Account Number</th> \
-                <th>Customer Name</th> \
-                <th>Customer Login ID</th> \
-                <th>PAN Number</th> \
-                <th>Aadhar Number</th> \
-                <th>Phone Number</th> \
-                <th>Address</th> \
-                <th>Balance</th> \
-            </tr>";
-            for (let i = 0; i < customersOfThisBank.length; i++) {
-                let account = getAccountDetails(customersOfThisBank[i].cust_id);
-                out += "<tr>\<td>" + account.account_num + "</td> \
-                        <td>" + customersOfThisBank[i].cust_name + "</td> \
-                        <td>" + customersOfThisBank[i].cust_login_id + "</td> \
-                        <td>" + customersOfThisBank[i].pan + "</td> \
-                        <td>" + customersOfThisBank[i].aadhar + "</td> \
-                        <td>" + customersOfThisBank[i].phone + "</td> \
-                        <td>" + customersOfThisBank[i].address + "</td> \
-                        <td>" + account.amount + "</td> \
-                        </tr>";
-                }
-            out += "</table>";
-            document.getElementById("allCustTable").innerHTML = out;
-        }
-    } else {
+            throw new Error('Invalid User!');
+        }   
+    } catch (error) {
+        console.log(error);
         logout();
-    }
+    } 
     document.getElementById("userInfo").style.display = "none";
     document.getElementById("addMoneyDiv").style.display = "none";
     document.getElementById("withdrawMoneyDiv").style.display = "none";
     document.getElementById("viewAllCustomersDiv").style.display = "";
+}
+
+function fetchAndDisplayAllCustomersInBank(employee) {
+    document.getElementById("bankStaffFunctions").style.display = "";
+    document.getElementById("bankManagerFunctions").style.display = "none";
+    let customersOfThisBank = customerData.filter(customer => customer.bank_id === employee.bank_id);
+    if (customersOfThisBank.length === 0) {
+        document.getElementById("allCustTable").innerHTML = "<p> No customers till now</p>";
+    } else {
+        out = "<table> \
+        <tr> \
+            <th>Account Number</th> \
+            <th>Customer Name</th> \
+            <th>Customer Login ID</th> \
+            <th>PAN Number</th> \
+            <th>Aadhar Number</th> \
+            <th>Phone Number</th> \
+            <th>Address</th> \
+            <th>Balance</th> \
+        </tr>";
+        for (let i = 0; i < customersOfThisBank.length; i++) {
+            let account = getAccountDetails(customersOfThisBank[i].cust_id);
+            out += "<tr>\<td>" + account.account_num + "</td> \
+                    <td>" + customersOfThisBank[i].cust_name + "</td> \
+                    <td>" + customersOfThisBank[i].cust_login_id + "</td> \
+                    <td>" + customersOfThisBank[i].pan + "</td> \
+                    <td>" + customersOfThisBank[i].aadhar + "</td> \
+                    <td>" + customersOfThisBank[i].phone + "</td> \
+                    <td>" + customersOfThisBank[i].address + "</td> \
+                    <td>" + account.amount + "</td> \
+                    </tr>";
+            }
+        out += "</table>";
+        document.getElementById("allCustTable").innerHTML = out;
+    }
 }
 
 //================================================================================================================================================================//
@@ -858,110 +885,129 @@ function openViewAllCustomers() {
 //Open Add Money
 function openAddMoney() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        document.getElementById("bankStaffFunctions").style.display = "";
-        document.getElementById("bankManagerFunctions").style.display = "none";
-        document.getElementById("userInfo").style.display = "none";
-        document.getElementById("addMoneyDiv").style.display = "";
-        document.getElementById("getAccNumDivForAdd").style.display = "";
-        document.getElementById("validateAccNumBtn1").style.display = "none";
-        document.getElementById("msgForUser").innerHTML = "";
-        document.getElementById("accNumField").value = "";
-        document.getElementById("moneyfield").value = "";
-        document.getElementById("notefield").value = "";
-        document.getElementById("moneyDivForAdd").style.display = "none";
-        document.getElementById("withdrawMoneyDiv").style.display = "none";
-        document.getElementById("viewAllCustomersDiv").style.display = "none";
-    } else {
-        logout();        
-    } 
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            document.getElementById("bankStaffFunctions").style.display = "";
+            document.getElementById("bankManagerFunctions").style.display = "none";
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("addMoneyDiv").style.display = "";
+            document.getElementById("getAccNumDivForAdd").style.display = "";
+            document.getElementById("validateAccNumBtn1").style.display = "none";
+            document.getElementById("msgForUser").innerHTML = "";
+            document.getElementById("accNumField").value = "";
+            document.getElementById("moneyfield").value = "";
+            document.getElementById("notefield").value = "";
+            document.getElementById("moneyDivForAdd").style.display = "none";
+            document.getElementById("withdrawMoneyDiv").style.display = "none";
+            document.getElementById("viewAllCustomersDiv").style.display = "none";
+        } else {
+            throw new Error('Invalid User!');
+        }         
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
 }
 
 //Validate Customer Account Number
 function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, operation) {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        var accNum = document.getElementById(field).value.trim();
-        if (accNum === "") {
-            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter the account number</p>";
-        } else if (isNaN(accNum)) {
-            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter valid amount</p>";
-        } else if (accNum.length!=11) {
-            document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
-        } else {
-            if (!accountData.some(account => account.account_num === accNum)) {
-                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
-            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            var accNum = document.getElementById(field).value.trim();
+            if (accNum === "") {
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter the account number</p>";
+            } else if (isNaN(accNum)) {
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter valid amount</p>";
+            } else if (accNum.length!=11) {
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
             } else {
-                document.getElementById(divToHide).style.display = "none";
-                document.getElementById(divToOpen).style.display = "";
-                document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be "+ operation +" : " + accNum;
+                if (!accountData.some(account => account.account_num === accNum)) {
+                    document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+                } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+                    document.getElementById(msgDiv).innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+                } else {
+                    document.getElementById(divToHide).style.display = "none";
+                    document.getElementById(divToOpen).style.display = "";
+                    document.getElementById("accNumToBeSent").innerHTML = "Enter the amount to be "+ operation +" : " + accNum;
+                }
             }
-        }
-    } else {
-        logout();        
+        } else {
+            throw new Error('Invalid User!');       
+        }        
+    } catch (error) {
+        console.log(error);
+        logout();
     }
 }
 
 //Add Money Function
 function addMoney() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        let msgDiv = document.getElementById("msgForUser");
-        var accNum = document.getElementById("accNumField").value.trim();
-        var amount = document.getElementById("moneyfield").value.trim();
-        var note = document.getElementById("notefield").value.trim();
-        if (accNum === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
-        } else if (isNaN(accNum)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
-        } else if (accNum.length!=11) {
-            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            validateAndAddMoney(employee);
         } else {
-            if (!accountData.some(account => account.account_num === accNum)) {
-                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
-            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
-            } else if (amount === "" || amount === "0") {
-                msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
-            } else if (isNaN(amount)) {
-                msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
-            } else if (amount > 1000000) {
-                msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
-            } else if (amount < 1) {
-                msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
-            } else if (note.length > 20) {
-                msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
-            } else {
-                //Add Money function
-                getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
-                console.log(getAccountDetailsWithAccountNumber(accNum).amount);
-                transactionData.push({
-                        "trans_id": generateUniqueID(8),
-                        "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
-                        "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
-                        "from_acc_no": accNum,
-                        "to_acc_no": accNum,
-                        "amount_transfered": amount,
-                        "trans_note": note,
-                        "balance": getAccountDetailsWithAccountNumber(accNum).amount,
-                        "date_time": getTimeStamp()               
-                    });
-                console.log(transactionData);
-                document.getElementById("getAccNumDivForAdd").style.display = "none";
-                document.getElementById("moneyDivForAdd").style.display = "none";
-                msgDiv.innerHTML = "<p style=color:green>Money added successfully.</p>";
-            }
+            throw new Error('Invalid User!');       
         }
-    } else {
+    } catch (error) {
+        console.log(error);
         logout();
+    }
+}
+
+function validateAndAddMoney(employee) {
+    let msgDiv = document.getElementById("msgForUser");
+    var accNum = document.getElementById("accNumField").value.trim();
+    var amount = document.getElementById("moneyfield").value.trim();
+    var note = document.getElementById("notefield").value.trim();
+    if (accNum === "") {
+        msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
+    } else if (isNaN(accNum)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
+    } else if (accNum.length!=11) {
+        msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    } else {
+        if (!accountData.some(account => account.account_num === accNum)) {
+            msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+        } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+            msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+        } else if (amount === "" || amount === "0") {
+            msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+        } else if (isNaN(amount)) {
+            msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+        } else if (amount > 1000000) {
+            msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
+        } else if (amount < 1) {
+            msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+        } else if (note.length > 20) {
+            msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+        } else {
+            //Add Money function
+            getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
+            console.log(getAccountDetailsWithAccountNumber(accNum).amount);
+            transactionData.push({
+                    "trans_id": generateUniqueID(8),
+                    "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
+                    "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
+                    "from_acc_no": accNum,
+                    "to_acc_no": accNum,
+                    "amount_transfered": amount,
+                    "trans_note": note,
+                    "balance": getAccountDetailsWithAccountNumber(accNum).amount,
+                    "date_time": getTimeStamp()               
+                });
+            console.log(transactionData);
+            document.getElementById("getAccNumDivForAdd").style.display = "none";
+            document.getElementById("moneyDivForAdd").style.display = "none";
+            msgDiv.innerHTML = "<p style=color:green>Money added successfully.</p>";
+        }
     }
 }
 
@@ -971,24 +1017,29 @@ function addMoney() {
 //Open Withdraw Money
 function openWithdrawMoney() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        document.getElementById("bankStaffFunctions").style.display = "";
-        document.getElementById("bankManagerFunctions").style.display = "none";
-        document.getElementById("userInfo").style.display = "none";
-        document.getElementById("addMoneyDiv").style.display = "none";
-        document.getElementById("withdrawMoneyDiv").style.display = "";
-        document.getElementById("getAccNumDivForWithdraw").style.display = "";
-        document.getElementById("validateAccNumBtn2").style.display = "none";
-        document.getElementById("msgForUserForWithdraw").innerHTML = "";
-        document.getElementById("accNumFieldForWithdraw").value = "";
-        document.getElementById("moneyfieldForWithdraw").value = "";
-        document.getElementById("notefieldForWithdraw").value = "";
-        document.getElementById("moneyDivForWithdraw").style.display = "none";
-        document.getElementById("viewAllCustomersDiv").style.display = "none";
-    } else {
-        logout();        
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            document.getElementById("bankStaffFunctions").style.display = "";
+            document.getElementById("bankManagerFunctions").style.display = "none";
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("addMoneyDiv").style.display = "none";
+            document.getElementById("withdrawMoneyDiv").style.display = "";
+            document.getElementById("getAccNumDivForWithdraw").style.display = "";
+            document.getElementById("validateAccNumBtn2").style.display = "none";
+            document.getElementById("msgForUserForWithdraw").innerHTML = "";
+            document.getElementById("accNumFieldForWithdraw").value = "";
+            document.getElementById("moneyfieldForWithdraw").value = "";
+            document.getElementById("notefieldForWithdraw").value = "";
+            document.getElementById("moneyDivForWithdraw").style.display = "none";
+            document.getElementById("viewAllCustomersDiv").style.display = "none";
+        } else {
+            throw new Error('Invalid User!');        
+        }
+    } catch (error) {
+        console.log(error);
+        logout();
     }
 }
 
@@ -997,59 +1048,68 @@ function openWithdrawMoney() {
 //Withdraw Money Function
 function withdrawMoney() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 2) {
-        let msgDiv = document.getElementById("msgForUserForWithdraw");
-        var accNum = document.getElementById("accNumFieldForWithdraw").value.trim();
-        var amount = document.getElementById("moneyfieldForWithdraw").value.trim();
-        var note = document.getElementById("notefieldForWithdraw").value.trim();
-        if (accNum === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
-        } else if (isNaN(accNum)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
-        } else if (accNum.length!=11) {
-            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
-        } else { 
-            if (!accountData.some(account => account.account_num === accNum)) {
-                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
-            } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
-                msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
-            } else if (amount === "" || amount === "0") {
-                msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
-            } else if (isNaN(amount)) {
-                msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
-            } else if (getAccountDetailsWithAccountNumber(accNum).amount < amount) {
-                msgDiv.innerHTML = "<p style=color:red>Insufficient amount, your balance is "+ getAccountDetailsWithAccountNumber(accNum).amount +"</p>";
-            } else if (amount > 1000000) {
-                msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
-            } else if (amount < 1) {
-                msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
-            } else if (note.length > 20) {
-                msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
-            } else {
-                //Withdraw money function
-                getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
-                console.log(getAccountDetailsWithAccountNumber(accNum).amount);
-                transactionData.push({
-                        "trans_id": generateUniqueID(8),
-                        "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
-                        "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
-                        "from_acc_no": accNum,
-                        "to_acc_no": accNum,
-                        "amount_transfered": -amount,
-                        "trans_note": note,
-                        "balance": getAccountDetailsWithAccountNumber(accNum).amount,
-                        "date_time": getTimeStamp()               
-                    });
-                console.log(transactionData);
-                document.getElementById("getAccNumDivForWithdraw").style.display = "none";
-                document.getElementById("moneyDivForWithdraw").style.display = "none";
-                msgDiv.innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
-            }
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankStaff(userId, employee)) {
+            validateAndWithdrawMoney(employee);
+        } else {
+            throw new Error('Invalid User!');    
         }
-    } else {
-        logout();    
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
+}
+
+function validateAndWithdrawMoney(employee) {
+    let msgDiv = document.getElementById("msgForUserForWithdraw");
+    var accNum = document.getElementById("accNumFieldForWithdraw").value.trim();
+    var amount = document.getElementById("moneyfieldForWithdraw").value.trim();
+    var note = document.getElementById("notefieldForWithdraw").value.trim();
+    if (accNum === "") {
+        msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
+    } else if (isNaN(accNum)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
+    } else if (accNum.length!=11) {
+        msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    } else { 
+        if (!accountData.some(account => account.account_num === accNum)) {
+            msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+        } else if (getAccountDetailsWithAccountNumber(accNum).bank_id != employee.bank_id) {
+            msgDiv.innerHTML = "<p style=color:red>Cannot transfer to other bank/branch.</p>";
+        } else if (amount === "" || amount === "0") {
+            msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+        } else if (isNaN(amount)) {
+            msgDiv.innerHTML = "<p style=color:red>Don't enter special characters, Please enter valid amount.</p>";
+        } else if (getAccountDetailsWithAccountNumber(accNum).amount < amount) {
+            msgDiv.innerHTML = "<p style=color:red>Insufficient amount, your balance is "+ getAccountDetailsWithAccountNumber(accNum).amount +"</p>";
+        } else if (amount > 1000000) {
+            msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>";
+        } else if (amount < 1) {
+            msgDiv.innerHTML = "<p style=color:red>Try to deposit amount minimum of than ₹1.</p>";
+        } else if (note.length > 20) {
+            msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters.</p>";
+        } else {
+            //Withdraw money function
+            getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
+            console.log(getAccountDetailsWithAccountNumber(accNum).amount);
+            transactionData.push({
+                    "trans_id": generateUniqueID(8),
+                    "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
+                    "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
+                    "from_acc_no": accNum,
+                    "to_acc_no": accNum,
+                    "amount_transfered": -amount,
+                    "trans_note": note,
+                    "balance": getAccountDetailsWithAccountNumber(accNum).amount,
+                    "date_time": getTimeStamp()               
+                });
+            console.log(transactionData);
+            document.getElementById("getAccNumDivForWithdraw").style.display = "none";
+            document.getElementById("moneyDivForWithdraw").style.display = "none";
+            msgDiv.innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
+        }
     }
 }
 

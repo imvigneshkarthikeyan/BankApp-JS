@@ -238,7 +238,7 @@ function validateLogin(id, msg, btn) {
     var loginID = document.getElementById(id).value.trim();
     var msgForUser = document.getElementById(msg);
     msgForUser.innerHTML = "";
-    var expr = /^([\w-\.]+)@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.)|(([\w-]+\.)+))([a-zA-Z]{2,4}|[0-9]{1,3})(\]?)$/;
+    var expr = /\S+@\S+\.\S+/;
     if (!expr.test(loginID)) {
         msgForUser.innerHTML = "Invalid Login ID.";
         document.getElementById(btn).style.display = "none";
@@ -373,7 +373,7 @@ function logInForEmployee(id, pass, msg) {
     let msgDiv = document.getElementById(msg);
     if (userId === "" && userPass === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter your user ID and password</p>";
-    } else if (userId === "") {//Add regex as well
+    } else if (userId === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter your user ID</p>";
     } else if (!validateEmail(userId)) {
         msgDiv.innerHTML = "<p style=color:red>Enter a valid mail id</p>";

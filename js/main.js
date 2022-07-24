@@ -297,7 +297,7 @@ function isAlphabet(word) {
 //TimeStamp
 function getTimeStamp() {
     var d = new Date;
-    var formattedDate = [d.getDate(), d.getMonth()+1, d.getFullYear()].join('-')+' | '+[d.getHours(), d.getMinutes()].join(':');
+    var formattedDate = [d.getDate(), d.getMonth()+1, d.getFullYear()].join('-')+' | '+[d.getHours(), d.getMinutes()<10?'0'+d.getMinutes():d.getMinutes()].join(':');
     return formattedDate;
 }
 

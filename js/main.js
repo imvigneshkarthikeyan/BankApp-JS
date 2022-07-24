@@ -353,6 +353,24 @@ function logout() {
     sessionStorage.clear();
     openLoginPage();
 }
+
+//Check is user logged in
+function isUserLoggedIn() {
+    var userIdJSON = sessionStorage.getItem("currentUser");
+    var userId = JSON.parse(userIdJSON);
+    let customer = customerData.find(customer => customer.cust_login_id === userId);
+    let employee = employeeData.find(employee => employee.emp_login_id === userId);
+    if (isUserCustomer(userId, customer)) {
+        openCustomerHomePage();
+    } else if (isUserBankStaff(userId, employee) || isUserBankManager(userId, employee)) {
+        openStaffHomePage();
+    } else {
+        logout();
+    }
+}
+
+window.onload = isUserLoggedIn();
+
 //================================================================================================================================================================//
 //================================================================================================================================================================//
 //================================================================================================================================================================//
@@ -1119,38 +1137,16 @@ function validateAndWithdrawMoney(employee) {
 //View All Staff
 function openViewAllStaffs() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        document.getElementById("bankStaffFunctions").style.display = "none";
-        document.getElementById("bankManagerFunctions").style.display = "";   
-        let employeesOfThisBank = employeeData.filter(e => e.bank_id == employee.bank_id);
-        if (employeesOfThisBank.length === 0) {
-                document.getElementById("listAllStaffsDiv").innerHTML = "<p> No staffs till now</p>";
-            } else {
-                out = "<table> \
-                <tr> \
-                        <th>Employee ID</th> \
-                        <th>Employee Name</th> \
-                        <th>Employee Login ID</th> \
-                        <th>Employee Role</th> \
-                    </tr>";
-                for (let i = 0; i < employeesOfThisBank.length; i++) {
-                    if (employeesOfThisBank[i].role_id == 1) {
-                        var roleName = "Manager";
-                    } else {
-                        roleName = "Staff";
-                    }
-                    out += "<tr><td>" + employeesOfThisBank[i].emp_id + "</td> \
-                            <td>" + employeesOfThisBank[i].emp_name + "</td> \
-                            <td>" + employeesOfThisBank[i].emp_login_id + "</td> \
-                            <td>" + roleName + "</td> \
-                        </tr>";
-                }
-                out += "</table>";
-                document.getElementById("listAllStaffsDiv").innerHTML = out;
-            }
-    } else {
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            fetchAndDisplayAllEmployeesInBank(employee);
+        } else {
+            throw new Error('Invalid User!');
+        }
+    } catch (error) {
+        console.log(error);
         logout();
     }
     document.getElementById("userInfo").style.display = "none";
@@ -1160,29 +1156,65 @@ function openViewAllStaffs() {
     document.getElementById("deleteStaffDiv").style.display = "none";
 }
 
+function fetchAndDisplayAllEmployeesInBank(employee) {
+    document.getElementById("bankStaffFunctions").style.display = "none";
+    document.getElementById("bankManagerFunctions").style.display = "";   
+    let employeesOfThisBank = employeeData.filter(e => e.bank_id == employee.bank_id);
+    if (employeesOfThisBank.length === 0) {
+        document.getElementById("listAllStaffsDiv").innerHTML = "<p> No staffs till now</p>";
+    } else {
+        out = "<table> \
+        <tr> \
+                <th>Employee ID</th> \
+                <th>Employee Name</th> \
+                <th>Employee Login ID</th> \
+                <th>Employee Role</th> \
+            </tr>";
+        for (let i = 0; i < employeesOfThisBank.length; i++) {
+            if (employeesOfThisBank[i].role_id == 1) {
+                var roleName = "Manager";
+            } else {
+                roleName = "Staff";
+            }
+            out += "<tr><td>" + employeesOfThisBank[i].emp_id + "</td> \
+                    <td>" + employeesOfThisBank[i].emp_name + "</td> \
+                    <td>" + employeesOfThisBank[i].emp_login_id + "</td> \
+                    <td>" + roleName + "</td> \
+                </tr>";
+        }
+        out += "</table>";
+        document.getElementById("listAllStaffsDiv").innerHTML = out;
+    }
+}
+
 //================================================================================================================================================================//
                             //Employee - Manager - Add Staff TAB//
 //================================================================================================================================================================//
 //Open Add New Staff
 function openManagerAddStaffs() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        document.getElementById("bankStaffFunctions").style.display = "none";
-        document.getElementById("bankManagerFunctions").style.display = "";
-        document.getElementById("userInfo").style.display = "none";
-        document.getElementById("viewAllStaffsDiv").style.display = "none";
-        document.getElementById("bankWideTransactionsDiv").style.display = "none";
-        document.getElementById("addNewStaffDiv").style.display = "";
-        document.getElementById("getUserNameToAddDiv").style.display = "";
-        document.getElementById("staffLoginIDfield").value = "";
-        document.getElementById("staffDetailsToAddDiv").style.display = "none";
-        document.getElementById("deleteStaffDiv").style.display = "none";
-        document.getElementById("msgForUserInAddStaff").innerHTML = "";
-        document.getElementById("nameOfStaffToBeAdded").value = "";
-        document.getElementById("passwordOfStaffToBeAdded").value = ""; 
-    } else {
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            document.getElementById("bankStaffFunctions").style.display = "none";
+            document.getElementById("bankManagerFunctions").style.display = "";
+            document.getElementById("userInfo").style.display = "none";
+            document.getElementById("viewAllStaffsDiv").style.display = "none";
+            document.getElementById("bankWideTransactionsDiv").style.display = "none";
+            document.getElementById("addNewStaffDiv").style.display = "";
+            document.getElementById("getUserNameToAddDiv").style.display = "";
+            document.getElementById("staffLoginIDfield").value = "";
+            document.getElementById("staffDetailsToAddDiv").style.display = "none";
+            document.getElementById("deleteStaffDiv").style.display = "none";
+            document.getElementById("msgForUserInAddStaff").innerHTML = "";
+            document.getElementById("nameOfStaffToBeAdded").value = "";
+            document.getElementById("passwordOfStaffToBeAdded").value = ""; 
+        } else {
+            throw new Error('Invalid User!');
+        }
+    } catch (error) {
+        console.log(error);
         logout();
     }
 }
@@ -1190,23 +1222,28 @@ function openManagerAddStaffs() {
 //Validate if ID available or not
 function validateStaffToAdd() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        let msgDiv = document.getElementById("msgForUserInAddStaff");
-        var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
-        if (newStaffID === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please enter the login ID for staff</p>";
-        } else if (!validateEmail(newStaffID)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
-        } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
-            msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            let msgDiv = document.getElementById("msgForUserInAddStaff");
+            var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
+            if (newStaffID === "") {
+                msgDiv.innerHTML = "<p style=color:red>Please enter the login ID for staff</p>";
+            } else if (!validateEmail(newStaffID)) {
+                msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
+            } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
+                msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
+            } else {
+                document.getElementById("getUserNameToAddDiv").style.display = "none";
+                document.getElementById("staffDetailsToAddDiv").style.display = "";
+                document.getElementById("staffIDFromTextHeading").innerHTML = "Enter the other details to create the staff with login id: " + newStaffID;
+            }
         } else {
-            document.getElementById("getUserNameToAddDiv").style.display = "none";
-            document.getElementById("staffDetailsToAddDiv").style.display = "";
-            document.getElementById("staffIDFromTextHeading").innerHTML = "Enter the other details to create the staff with login id: " + newStaffID;
+            throw new Error('Invalid User!');
         }
-    } else {
+    } catch (error) {
+        console.log(error);
         logout();
     }
 }
@@ -1214,36 +1251,47 @@ function validateStaffToAdd() {
 //Add Staff
 function addStaff() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let employee = employeeData.find(employee => employee.emp_login_id === userId);
-    if (userId != null && typeof employee != "undefined" && employee.role_id == 1) {
-        let msgDiv = document.getElementById("msgForUserInAddStaff");
-        var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
-        var newStaffName = document.getElementById("nameOfStaffToBeAdded").value.trim();
-        var newStaffPass = document.getElementById("passwordOfStaffToBeAdded").value;
-        if (newStaffID === "" || newStaffName === "" || newStaffPass === "") {
-            msgDiv.innerHTML = "<p style=color:red>Enter all the details</p>";
-        } else if (!validateEmail(newStaffID)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
-        } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
-            msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
-        } else if (newStaffName.length < 1 || newStaffName.length > 30) {
-            msgDiv.innerHTML = "<p style=color:red>The name should be minimum of 1 character to maximum of 30 characters only</p>";        
-        } else if (newStaffPass.length < 3 || newStaffPass.length > 16) {
-            msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let employee = employeeData.find(employee => employee.emp_login_id === userId);
+        if (isUserBankManager(userId, employee)) {
+            validateAndAddStaff(employee);
         } else {
-            employeeData.push({
-                    "emp_id": generateUniqueID(8),
-                    "emp_login_id": newStaffID,
-                    "emp_pass": newStaffPass,
-                    "bank_id": employee.bank_id,
-                    "emp_name": newStaffName,
-                    "role_id": "2" 
-                });
-            console.log(employeeData);
-            document.getElementById("staffDetailsToAddDiv").style.display = "none";
-            msgDiv.innerHTML = "<p style=color:green>Staff Created Successfully</p>";
+            throw new Error('Invalid User!');
         }
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
+}
+
+function validateAndAddStaff(employee) {
+    let msgDiv = document.getElementById("msgForUserInAddStaff");
+    var newStaffID = document.getElementById("staffLoginIDfield").value.trim();
+    var newStaffName = document.getElementById("nameOfStaffToBeAdded").value.trim();
+    var newStaffPass = document.getElementById("passwordOfStaffToBeAdded").value;
+    if (newStaffID === "" || newStaffName === "" || newStaffPass === "") {
+        msgDiv.innerHTML = "<p style=color:red>Enter all the details</p>";
+    } else if (!validateEmail(newStaffID)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
+    } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
+        msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
+    } else if (newStaffName.length < 1 || newStaffName.length > 30) {
+        msgDiv.innerHTML = "<p style=color:red>The name should be minimum of 1 character to maximum of 30 characters only</p>";        
+    } else if (newStaffPass.length < 3 || newStaffPass.length > 16) {
+        msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
+    } else {
+        employeeData.push({
+                "emp_id": generateUniqueID(8),
+                "emp_login_id": newStaffID,
+                "emp_pass": newStaffPass,
+                "bank_id": employee.bank_id,
+                "emp_name": newStaffName,
+                "role_id": "2" 
+            });
+        console.log(employeeData);
+        document.getElementById("staffDetailsToAddDiv").style.display = "none";
+        msgDiv.innerHTML = "<p style=color:green>Staff Created Successfully</p>";
     }
 }
 

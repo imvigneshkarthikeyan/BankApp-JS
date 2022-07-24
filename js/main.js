@@ -351,15 +351,18 @@ function logIn(id, pass, msg) {
 function customerAuthenticateLogin(userId, userPass, msgDiv, id, pass) {
     if (!customerData.find(customer => customer.cust_login_id === userId)) {
         msgDiv.innerHTML = "<p style=color:red>Invalid User ID, Try again!</p>";
-    } else if (!customerData.find(customer => customer.cust_pass === userPass)) {
-        msgDiv.innerHTML = "<p style=color:red>Invalid password, Try again!</p>";
     } else {
-        sessionStorage.setItem("currentUser", JSON.stringify(userId));        
-        msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
-        openCustomerHomePage();
-        document.getElementById(id).value = "";
-        document.getElementById(pass).value = "";
-        msgDiv.innerHTML = "";
+        let customerToLogin = customerData.find(customer => customer.cust_login_id === userId);
+        if (customerToLogin.cust_pass !== userPass) {
+            msgDiv.innerHTML = "<p style=color:red>Invalid password, Try again!</p>";
+        } else {
+            sessionStorage.setItem("currentUser", JSON.stringify(userId));        
+            msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
+            openCustomerHomePage();
+            document.getElementById(id).value = "";
+            document.getElementById(pass).value = "";
+            msgDiv.innerHTML = "";
+        }
     }
 }
 
@@ -389,15 +392,18 @@ function logInForEmployee(id, pass, msg) {
 function employeeAuthenticateLogin(userId, userPass, msgDiv, id, pass) {
     if (!employeeData.find(employee => employee.emp_login_id === userId)) {
         msgDiv.innerHTML = "<p style=color:red>Invalid User ID, Try again!</p>";
-    } else if (!employeeData.find(employee => employee.emp_pass === userPass)) {
-        msgDiv.innerHTML = "<p style=color:red>Invalid password, Try again!</p>";
     } else {
-        sessionStorage.setItem("currentUser", JSON.stringify(userId));
-        msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
-        openStaffHomePage();
-        document.getElementById(id).value = "";
-        document.getElementById(pass).value = "";
-        msgDiv.innerHTML = "";
+        let employeeToLogin = employeeData.find(employee => employee.emp_login_id === userId);
+        if (employeeToLogin.emp_pass !== userPass) {
+            msgDiv.innerHTML = "<p style=color:red>Invalid password, Try again!</p>";
+        } else {
+            sessionStorage.setItem("currentUser", JSON.stringify(userId));
+            msgDiv.innerHTML = "<p style=color:green>Valid User. Redirecting!</p>";
+            openStaffHomePage();
+            document.getElementById(id).value = "";
+            document.getElementById(pass).value = "";
+            msgDiv.innerHTML = "";
+        }
     }
 }
 

@@ -546,49 +546,58 @@ function validateAndUpdateCustomerData(customer) {
 //Open Transactions
 function openCustomerTransactions() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        document.getElementById("userInfoCustHome").style.display = "none";
-        document.getElementById("trasferMoney").style.display = "none";
-        document.getElementById("showBalanceDiv").style.display = "none";
-        document.getElementById("transactionHistoryDiv").style.display = "";
-        document.getElementById("myInfoDiv").style.display = "none";
-        let customerTransactions = transactionData.filter(transaction => transaction.cust_id === customer.cust_id).reverse();
-        console.log(customerTransactions);
-        if (customerTransactions.length === 0) {
-            document.getElementById("custTransactionHistoryDiv").innerHTML = "<p> No Transactions till now</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            fetchAndDisplayCustomerTransactions(customer);
+            document.getElementById("userInfoCustHome").style.display = "none";
+            document.getElementById("trasferMoney").style.display = "none";
+            document.getElementById("showBalanceDiv").style.display = "none";
+            document.getElementById("transactionHistoryDiv").style.display = "";
+            document.getElementById("myInfoDiv").style.display = "none";
         } else {
-            var balance = getAccountDetails(customer.cust_id).amount;
-            out = "<table> \
-                <tr> \
-                        <th>Date | Time</th> \
-                        <th>From Account Number </th> \
-                        <th>To Account Number</th> \
-                        <th>Amount Transferred</th> \
-                        <th>Balance</th> \
-                        <th>Transaction Note</th> \
-                </tr>";
-            for (let i = 0; i < customerTransactions.length; i++) {
-                let amount = customerTransactions[i].amount_transfered;
-                out += "<tr><td>" + customerTransactions[i].date_time + "</td> \
-                        <td>" + customerTransactions[i].from_acc_no + "</td> \
-                        <td>" + customerTransactions[i].to_acc_no + "</td>";
-                if (Math.sign(amount) === -1) {
-                    out += "<td style='color: red'>" + customerTransactions[i].amount_transfered + "</td>";
-                } else {
-                    out += "<td style='color: green'>" + customerTransactions[i].amount_transfered + "</td>";
-                }
-                out += "<td>" + balance + "</td> \
-                        <td>" + customerTransactions[i].trans_note + "</td> \
-                        </tr>";
-                balance = Number(balance) - Number(customerTransactions[i].amount_transfered);        
-            }
-            out += "</table>";
-            document.getElementById("custTransactionHistoryDiv").innerHTML = out;
+            throw new Error('Invalid User!');
         }
-    } else {
+    } catch (error) {
+        console.log(error);
         logout();
+    }
+}
+
+function fetchAndDisplayCustomerTransactions(customer) {
+    let customerTransactions = transactionData.filter(transaction => transaction.cust_id === customer.cust_id).reverse();
+    console.log(customerTransactions);
+    if (customerTransactions.length === 0) {
+        document.getElementById("custTransactionHistoryDiv").innerHTML = "<p> No Transactions till now</p>";
+    } else {
+        var balance = getAccountDetails(customer.cust_id).amount;
+        out = "<table> \
+            <tr> \
+                <th>Date | Time</th> \
+                <th>From Account Number </th> \
+                <th>To Account Number</th> \
+                <th>Amount Transferred</th> \
+                <th>Balance</th> \
+                <th>Transaction Note</th> \
+            </tr>";
+        for (let i = 0; i < customerTransactions.length; i++) {
+            let amount = customerTransactions[i].amount_transfered;
+            out += "<tr><td>" + customerTransactions[i].date_time + "</td> \
+                    <td>" + customerTransactions[i].from_acc_no + "</td> \
+                    <td>" + customerTransactions[i].to_acc_no + "</td>";
+            if (Math.sign(amount) === -1) {
+                out += "<td style='color: red'>" + customerTransactions[i].amount_transfered + "</td>";
+            } else {
+                out += "<td style='color: green'>" + customerTransactions[i].amount_transfered + "</td>";
+            }
+            out += "<td>" + balance + "</td> \
+                    <td>" + customerTransactions[i].trans_note + "</td> \
+                    </tr>";
+            balance = Number(balance) - Number(customerTransactions[i].amount_transfered);        
+        }
+        out += "</table>";
+        document.getElementById("custTransactionHistoryDiv").innerHTML = out;
     }
 }
 
@@ -598,130 +607,152 @@ function openCustomerTransactions() {
 //Open Transfer Fund
 function openCustomerTransferFund() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        document.getElementById("userInfoCustHome").style.display = "none";
-        document.getElementById("trasferMoney").style.display = "";
-        document.getElementById("getAccNumDiv").style.display = "";
-        document.getElementById("validateAccNumBtn").style.display = "none";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            document.getElementById("userInfoCustHome").style.display = "none";
+            document.getElementById("trasferMoney").style.display = "";
+            document.getElementById("getAccNumDiv").style.display = "";
+            document.getElementById("validateAccNumBtn").style.display = "none";
 
-        document.getElementById("msgForUserCustHome").innerHTML = "";
-        document.getElementById("accNumFieldCustHome").value = "";
-        document.getElementById("moneyfieldCustHome").value = "";
-        document.getElementById("notefieldCustHome").value = "";
+            document.getElementById("msgForUserCustHome").innerHTML = "";
+            document.getElementById("accNumFieldCustHome").value = "";
+            document.getElementById("moneyfieldCustHome").value = "";
+            document.getElementById("notefieldCustHome").value = "";
 
-        document.getElementById("transferFundDiv").style.display = "none";
-        document.getElementById("showBalanceDiv").style.display = "none";
-        document.getElementById("transactionHistoryDiv").style.display = "none";
-        document.getElementById("myInfoDiv").style.display = "none";
-
-    } else {
+            document.getElementById("transferFundDiv").style.display = "none";
+            document.getElementById("showBalanceDiv").style.display = "none";
+            document.getElementById("transactionHistoryDiv").style.display = "none";
+            document.getElementById("myInfoDiv").style.display = "none";
+        } else {
+            throw new Error('Invalid User!');
+        }   
+    } catch (error) {
+        console.log(error);
         logout();
-    } 
+    }
 }
 
 //Validate Account Number 
 function validateAccountNumberForTransfer() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumFieldCustHome").value.trim();
-        let msgDiv = document.getElementById("msgForUserCustHome");
-        if (accNum === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
-        } else if (isNaN(accNum)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter valid account number</p>";
-        } else if (accNum.length!=11) {
-            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            accountNumberValidationAndRedirect(customer);
         } else {
-            let fromAccount = getAccountDetails(customer.cust_id);
-            if (!accountData.some(account => account.account_num === accNum)) {
-                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
-            } else if (fromAccount.account_num === accNum) {
-                msgDiv.innerHTML = "<p style=color:red>Don't enter your Account Number</p>";
-            } else {
-                document.getElementById("getAccNumDiv").style.display = "none";
-                document.getElementById("transferFundDiv").style.display = "";
-                document.getElementById("accNumToBeSentCustHome").innerHTML = "Enter the amount to be transferred to: " + accNum;
-            }
-        }
-    } else {
+            throw new Error('Invalid User!');
+        }       
+    } catch (error) {
+        console.log(error);
         logout();
+    }
+}
+
+function accountNumberValidationAndRedirect(customer) {
+    var accNum = document.getElementById("accNumFieldCustHome").value.trim();
+    let msgDiv = document.getElementById("msgForUserCustHome");
+    if (accNum === "") {
+        msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
+    } else if (isNaN(accNum)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid account number</p>";
+    } else if (accNum.length!=11) {
+        msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    } else {
+        let fromAccount = getAccountDetails(customer.cust_id);
+        if (!accountData.some(account => account.account_num === accNum)) {
+            msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+        } else if (fromAccount.account_num === accNum) {
+            msgDiv.innerHTML = "<p style=color:red>Don't enter your Account Number</p>";
+        } else {
+            document.getElementById("getAccNumDiv").style.display = "none";
+            document.getElementById("transferFundDiv").style.display = "";
+            document.getElementById("accNumToBeSentCustHome").innerHTML = "Enter the amount to be transferred to: " + accNum;
+        }
     }
 }
 
 //Transfer Fund
 function transferFund() {
     var userIdJSON = sessionStorage.getItem("currentUser");
-    var userId = JSON.parse(userIdJSON);
-    let customer = customerData.find(customer => customer.cust_login_id === userId);
-    if (userId != null && typeof customer != "undefined") {
-        var accNum = document.getElementById("accNumFieldCustHome").value.trim();
-        var amount = document.getElementById("moneyfieldCustHome").value.trim();
-        var note = document.getElementById("notefieldCustHome").value.trim();
-        let msgDiv = document.getElementById("msgForUserCustHome");
-        if (accNum === "") {
-            msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
-        } else if (isNaN(accNum)) {
-            msgDiv.innerHTML = "<p style=color:red>Please enter valid account number, don't enter special characters.</p>";
-        } else if (accNum.length!=11) {
-            msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    try {
+        var userId = JSON.parse(userIdJSON);
+        let customer = customerData.find(customer => customer.cust_login_id === userId);
+        if (isUserCustomer(userId, customer)) {
+            validateAndTransferFund(customer);
         } else {
-            let fromAccount = getAccountDetails(customer.cust_id);
-            if (!accountData.some(account => account.account_num === accNum)) {
-                msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
-            } else if (fromAccount.account_num === accNum) {
-                msgDiv.innerHTML = "<p style=color:red>Don't enter your Account Number</p>";
+            throw new Error('Invalid User!');         
+        }       
+    } catch (error) {
+        console.log(error);
+        logout();
+    }
+}
+
+function validateAndTransferFund(customer) {
+    var accNum = document.getElementById("accNumFieldCustHome").value.trim();
+    var amount = document.getElementById("moneyfieldCustHome").value.trim();
+    var note = document.getElementById("notefieldCustHome").value.trim();
+    let msgDiv = document.getElementById("msgForUserCustHome");
+    if (accNum === "") {
+        msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
+    } else if (isNaN(accNum)) {
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid account number, don't enter special characters.</p>";
+    } else if (accNum.length!=11) {
+        msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
+    } else {
+        let fromAccount = getAccountDetails(customer.cust_id);
+        if (!accountData.some(account => account.account_num === accNum)) {
+            msgDiv.innerHTML = "<p style=color:red>Account Number doesn't exist, enter an existing account number to transfer.</p>";
+        } else if (fromAccount.account_num === accNum) {
+            msgDiv.innerHTML = "<p style=color:red>Don't enter your Account Number</p>";
+        } else {
+            if (amount === "" || amount === "0") {
+                msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
+            } else if (isNaN(amount)) {
+                msgDiv.innerHTML = "<p style=color:red>Please enter valid amount, don't enter characters.</p>";
+            } else if (fromAccount.amount < amount) {
+                msgDiv.innerHTML = "<p style=color:red>Try entering value less than your balance. Your Balance is " + fromAccount.amount + "</p>"
+            } else if (amount < 1) {
+                msgDiv.innerHTML = "<p style=color:red>The minimum transaction is ₹1</p>"
+            } else if (1000000 < amount) {
+                msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>"
+            } else if (note.length > 20) {
+                msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters</p>";
             } else {
-                if (amount === "" || amount === "0") {
-                    msgDiv.innerHTML = "<p style=color:red>Min enter 1 Rupee</p>";
-                } else if (isNaN(amount)) {
-                    msgDiv.innerHTML = "<p style=color:red>Please enter valid amount, don't enter characters.</p>";
-                } else if (fromAccount.amount < amount) {
-                    msgDiv.innerHTML = "<p style=color:red>Try entering value less than your balance. Your Balance is " + fromAccount.amount + "</p>"
-                } else if (amount < 1) {
-                    msgDiv.innerHTML = "<p style=color:red>The minimum transaction is ₹1</p>"
-                } else if (1000000 < amount) {
-                    msgDiv.innerHTML = "<p style=color:red>The maximum transaction is ₹1000000</p>"
-                } else if (note.length > 20) {
-                    msgDiv.innerHTML = "<p style=color:red>Note can be maximum 20 Characters</p>";
-                } else {
-                    let toAccount = accountData.find(account => account.account_num === accNum);
-                    fromAccount.amount = Number(fromAccount.amount) - Number(amount);
-                    transactionData.push({
-                        "trans_id": generateUniqueID(8),
-                        "cust_id": fromAccount.cust_id,
-                        "bank_id": fromAccount.bank_id,
-                        "from_acc_no": fromAccount.account_num,
-                        "to_acc_no": toAccount.account_num,
-                        "amount_transfered": -amount,
-                        "trans_note": note,
-                        "balance": fromAccount.amount,
-                        "date_time": getTimeStamp()               
-                    });
-                    toAccount.amount = Number(toAccount.amount) + Number(amount);
-                    transactionData.push({
-                        "trans_id": generateUniqueID(8),
-                        "cust_id": toAccount.cust_id,
-                        "bank_id": toAccount.bank_id,
-                        "from_acc_no": fromAccount.account_num,
-                        "to_acc_no": toAccount.account_num,
-                        "amount_transfered": Number(amount),
-                        "trans_note": note,
-                        "balance": toAccount.amount,
-                        "date_time": getTimeStamp()               
-                    });
-                    document.getElementById("getAccNumDiv").style.display = "none";
-                    document.getElementById("transferFundDiv").style.display = "none";
-                    msgDiv.innerHTML = "<p style=color:green> ₹ " + amount + " transfered successfully to account no: " + toAccount.account_num + "</p>";
-                    console.log(transactionData);
-                }
+                let toAccount = accountData.find(account => account.account_num === accNum);
+                fromAccount.amount = Number(fromAccount.amount) - Number(amount);
+                transactionData.push({
+                    "trans_id": generateUniqueID(8),
+                    "cust_id": fromAccount.cust_id,
+                    "bank_id": fromAccount.bank_id,
+                    "from_acc_no": fromAccount.account_num,
+                    "to_acc_no": toAccount.account_num,
+                    "amount_transfered": -amount,
+                    "trans_note": note,
+                    "balance": fromAccount.amount,
+                    "date_time": getTimeStamp()               
+                });
+                toAccount.amount = Number(toAccount.amount) + Number(amount);
+                transactionData.push({
+                    "trans_id": generateUniqueID(8),
+                    "cust_id": toAccount.cust_id,
+                    "bank_id": toAccount.bank_id,
+                    "from_acc_no": fromAccount.account_num,
+                    "to_acc_no": toAccount.account_num,
+                    "amount_transfered": Number(amount),
+                    "trans_note": note,
+                    "balance": toAccount.amount,
+                    "date_time": getTimeStamp()               
+                });
+                document.getElementById("getAccNumDiv").style.display = "none";
+                document.getElementById("transferFundDiv").style.display = "none";
+                msgDiv.innerHTML = "<p style=color:green> ₹ " + amount + " transfered successfully to account no: " + toAccount.account_num + "</p>";
+                console.log(transactionData);
             }
         }
-    } else {
-        logout();         
     }
 }
 

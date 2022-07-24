@@ -97,6 +97,38 @@ let employeeData = [
         "bank_id": "2",
         "emp_name": "Das",
         "role_id": "2"
+    },
+    {
+        "emp_id": "5",
+        "emp_login_id": "rolex@gmail.com",
+        "emp_pass": "123",
+        "bank_id": "3",
+        "emp_name": "Rolex",
+        "role_id": "1"
+    },
+    {
+        "emp_id": "6",
+        "emp_login_id": "remo@gmail.com",
+        "emp_pass": "123",
+        "bank_id": "3",
+        "emp_name": "Remo",
+        "role_id": "2"
+    },
+    {
+        "emp_id": "7",
+        "emp_login_id": "vikram@gmail.com",
+        "emp_pass": "123",
+        "bank_id": "4",
+        "emp_name": "Vikram",
+        "role_id": "1"
+    },
+    {
+        "emp_id": "8",
+        "emp_login_id": "nokia@gmail.com",
+        "emp_pass": "123",
+        "bank_id": "4",
+        "emp_name": "Nokia",
+        "role_id": "2"
     }
 ]
 
@@ -115,6 +147,20 @@ let bankData = [
         "branch_name": "Nanganallur",
         "ifsc_code": "ICIC0000054",
         "manager_id": "2"
+    },
+    {
+        "bank_id": "3",
+        "bank_name": "HDFC",
+        "branch_name": "Adambakkam",
+        "ifsc_code": "HDFC0001858",
+        "manager_id": "5"
+    },
+    {
+        "bank_id": "4",
+        "bank_name": "ICICI",
+        "branch_name": "Velachery",
+        "ifsc_code": "ICIC0000385",
+        "manager_id": "7"
     }
 ]
 
@@ -725,7 +771,7 @@ function transferFund() {
 
 function validateAndTransferFund(customer) {
     var accNum = document.getElementById("accNumFieldCustHome").value.trim();
-    var amount = document.getElementById("moneyfieldCustHome").value.trim();
+    var amount = Math.trunc(document.getElementById("moneyfieldCustHome").value.trim());
     var note = document.getElementById("notefieldCustHome").value.trim();
     let msgDiv = document.getElementById("msgForUserCustHome");
     if (accNum === "") {
@@ -1004,7 +1050,7 @@ function addMoney() {
 function validateAndAddMoney(employee) {
     let msgDiv = document.getElementById("msgForUser");
     var accNum = document.getElementById("accNumField").value.trim();
-    var amount = document.getElementById("moneyfield").value.trim();
+    var amount = Math.trunc(document.getElementById("moneyfield").value.trim());
     var note = document.getElementById("notefield").value.trim();
     if (accNum === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
@@ -1045,7 +1091,7 @@ function validateAndAddMoney(employee) {
             console.log(transactionData);
             document.getElementById("getAccNumDivForAdd").style.display = "none";
             document.getElementById("moneyDivForAdd").style.display = "none";
-            msgDiv.innerHTML = "<p style=color:green>Money added successfully.</p>";
+            msgDiv.innerHTML = "<p style=color:green>₹ " + amount + " added successfully.</p>";
         }
     }
 }
@@ -1106,7 +1152,7 @@ function withdrawMoney() {
 function validateAndWithdrawMoney(employee) {
     let msgDiv = document.getElementById("msgForUserForWithdraw");
     var accNum = document.getElementById("accNumFieldForWithdraw").value.trim();
-    var amount = document.getElementById("moneyfieldForWithdraw").value.trim();
+    var amount = Math.trunc(document.getElementById("moneyfieldForWithdraw").value.trim());
     var note = document.getElementById("notefieldForWithdraw").value.trim();
     if (accNum === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
@@ -1149,7 +1195,7 @@ function validateAndWithdrawMoney(employee) {
             console.log(transactionData);
             document.getElementById("getAccNumDivForWithdraw").style.display = "none";
             document.getElementById("moneyDivForWithdraw").style.display = "none";
-            msgDiv.innerHTML = "<p style=color:green>Money withdrawn successfully!</p>";
+            msgDiv.innerHTML = "<p style=color:green>₹ " + amount + " withdrawn successfully!</p>";
         }
     }
 }

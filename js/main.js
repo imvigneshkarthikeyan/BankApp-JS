@@ -231,19 +231,8 @@ function getAccountDetailsWithAccountNumber(acc_num) {
 }
 
 //================================================================================================================================================================//
-                            //Validators//
+                            //Validators & Generators//
 //================================================================================================================================================================//
-function generateUniqueID(n) {
-        var add = 1, max = 12 - add;
-        if ( n > max ) {
-            return generate(max) + generate(n - max);
-        }
-        max        = Math.pow(10, n+add);
-        var min    = max/10; // Math.pow(10, n) basically
-        var number = Math.floor( Math.random() * (max - min + 1) ) + min;
-        return ("" + number).substring(add); 
-}
-
 //Regex Check for login onKeyUp
 function validateLogin(id, msg, btn) {
     var loginID = document.getElementById(id).value.trim();
@@ -305,6 +294,15 @@ function getTimeStamp() {
     var d = new Date;
     var formattedDate = [d.getDate(), d.getMonth()+1, d.getFullYear()].join('-')+' | '+[d.getHours(), d.getMinutes()].join(':');
     return formattedDate;
+}
+
+//ID Generators
+function generateUniqueID() {
+    return Math.trunc(Math.random()*100000000).toString();
+}
+
+function generateAccountNumber() {
+    return Math.trunc(Math.random()*100000000000).toString();
 }
 
 //================================================================================================================================================================//
@@ -809,7 +807,7 @@ function validateAndTransferFund(customer) {
                 let toAccount = accountData.find(account => account.account_num === accNum);
                 fromAccount.amount = Number(fromAccount.amount) - Number(amount);
                 transactionData.push({
-                    "trans_id": generateUniqueID(8),
+                    "trans_id": generateUniqueID(),
                     "cust_id": fromAccount.cust_id,
                     "bank_id": fromAccount.bank_id,
                     "from_acc_no": fromAccount.account_num,
@@ -821,7 +819,7 @@ function validateAndTransferFund(customer) {
                 });
                 toAccount.amount = Number(toAccount.amount) + Number(amount);
                 transactionData.push({
-                    "trans_id": generateUniqueID(8),
+                    "trans_id": generateUniqueID(),
                     "cust_id": toAccount.cust_id,
                     "bank_id": toAccount.bank_id,
                     "from_acc_no": fromAccount.account_num,
@@ -1084,7 +1082,7 @@ function validateAndAddMoney(employee) {
             getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
             console.log(getAccountDetailsWithAccountNumber(accNum).amount);
             transactionData.push({
-                    "trans_id": generateUniqueID(8),
+                    "trans_id": generateUniqueID(),
                     "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                     "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                     "from_acc_no": accNum,
@@ -1188,7 +1186,7 @@ function validateAndWithdrawMoney(employee) {
             getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
             console.log(getAccountDetailsWithAccountNumber(accNum).amount);
             transactionData.push({
-                    "trans_id": generateUniqueID(8),
+                    "trans_id": generateUniqueID(),
                     "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                     "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                     "from_acc_no": accNum,
@@ -1363,7 +1361,7 @@ function validateAndAddStaff(employee) {
         msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
     } else {
         employeeData.push({
-                "emp_id": generateUniqueID(8),
+                "emp_id": generateUniqueID(),
                 "emp_login_id": newStaffID,
                 "emp_pass": newStaffPass,
                 "bank_id": employee.bank_id,
@@ -1595,7 +1593,7 @@ function checkUserExist() {
 //Get the unique banks 
 function fetchUniqueBanksAndPopulate() {
     let uniqueBanks = Array.from(new Set(bankData.map(bank => bank.bank_name)));
-    let out;
+    let out = "";
     for (let i = 0; i < uniqueBanks.length; i++) {
         out += "<option value=" + uniqueBanks[i] + ">" + uniqueBanks[i] + "</option>";
     }
@@ -1609,7 +1607,7 @@ function getBranchForBank() {
     var selectedBank = bankField.options[bankField.selectedIndex].value.trim();
     if (typeof bankData.find(b => b.bank_name === selectedBank) !== "undefined") {
         let branchesForBank = bankData.filter(bank => bank.bank_name === selectedBank);
-        let out;
+        let out = "";
         for (let i = 0; i < branchesForBank.length; i++) {
             out += "<option value=" + branchesForBank[i].branch_name + ">" + branchesForBank[i].branch_name + "</option>";
         }
@@ -1701,7 +1699,7 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         msgDiv.innerHTML = "<p style=color:red>Phone number already exists, go back and login or try giving different Phone number.</p>";
     } else {
         customerData.push({
-            "cust_id": generateUniqueID(8),
+            "cust_id": generateUniqueID(),
             "cust_login_id": userId,
             "cust_pass": userPass,
             "bank_id": bank.bank_id,
@@ -1713,8 +1711,8 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         });
         let customer = customerData.find(c => c.cust_login_id === userId);
         accountData.push({
-            "account_id": generateUniqueID(8),
-            "account_num": generateUniqueID(11),
+            "account_id": generateUniqueID(),
+            "account_num": generateAccountNumber(),
             "amount": "0",
             "cust_id": customer.cust_id,
             "bank_id": bank.bank_id

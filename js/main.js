@@ -249,6 +249,11 @@ function onlyNumberKey(e) {
     return true;
 }
 
+//Allow only alphabets
+function isAlphabet(word) {
+    return !/[^a-zA-Z]/.test(word);
+}
+
 //TimeStamp
 function getTimeStamp() {
     var d = new Date;
@@ -955,7 +960,7 @@ function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, oper
             if (accNum === "") {
                 document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter the account number</p>";
             } else if (isNaN(accNum)) {
-                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter valid amount</p>";
+                document.getElementById(msgDiv).innerHTML = "<p style=color:red>Please enter valid account number</p>";
             } else if (accNum.length!=11) {
                 document.getElementById(msgDiv).innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
             } else {
@@ -1004,7 +1009,7 @@ function validateAndAddMoney(employee) {
     if (accNum === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
     } else if (isNaN(accNum)) {
-        msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid account number</p>";
     } else if (accNum.length!=11) {
         msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
     } else {
@@ -1106,7 +1111,7 @@ function validateAndWithdrawMoney(employee) {
     if (accNum === "") {
         msgDiv.innerHTML = "<p style=color:red>Please enter the account number</p>";
     } else if (isNaN(accNum)) {
-        msgDiv.innerHTML = "<p style=color:red>Please enter valid amount</p>";
+        msgDiv.innerHTML = "<p style=color:red>Please enter valid account number</p>";
     } else if (accNum.length!=11) {
         msgDiv.innerHTML = "<p style=color:red>Account Number is 11 Digits</p>";
     } else { 
@@ -1298,8 +1303,10 @@ function validateAndAddStaff(employee) {
         msgDiv.innerHTML = "<p style=color:red>Please enter a valid mail ID</p>";        
     } else if (employeeData.some(employee => employee.emp_login_id === newStaffID)) {
         msgDiv.innerHTML = "<p style=color:red>This ID already exist, try different ID</p>";        
-    } else if (newStaffName.length < 1 || newStaffName.length > 30) {
-        msgDiv.innerHTML = "<p style=color:red>The name should be minimum of 1 character to maximum of 30 characters only</p>";        
+    } else if (newStaffName.length < 2 || newStaffName.length > 30) {
+        msgDiv.innerHTML = "<p style=color:red>The name should be minimum of 2 characters to maximum of 30 characters only</p>";        
+    } else if (!isAlphabet(newStaffName)) {
+        msgDiv.innerHTML = "<p style=color:red>Enter only alphabets in name.</p>";        
     } else if (newStaffPass.length < 3 || newStaffPass.length > 16) {
         msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
     } else {
@@ -1513,6 +1520,8 @@ function checkUserExist() {
         errorDiv.innerHTML = "<p style=color:red>Please enter your user ID to signup</p>";
     } else if (userName.length < 2 || userName.length > 30) {
         errorDiv.innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
+    } else if (!isAlphabet(userName)) {
+        errorDiv.innerHTML = "<p style=color:red>Enter only alphabets in name.</p>";        
     } else if (userId.length < 5 || userId.length > 320) {
         errorDiv.innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
     } else if (!validateEmail(userId)) {
@@ -1608,6 +1617,8 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         msgDiv.innerHTML = "<p style=color:red>Please enter all the details to signup</p>";
     } else if (userName.length < 2 || userName.length > 30) {
         msgDiv.innerHTML = "<p style=color:red>User Name should be minimum of 2 characters to maximum of 30 characters</p>";
+    } else if (!isAlphabet(userName)) {
+        msgDiv.innerHTML = "<p style=color:red>Enter only alphabets in name.</p>";        
     } else if (userId.length < 5 || userId.length > 320) {
         msgDiv.innerHTML = "<p style=color:red>Login ID must be minimum 5 characters and maximum of 320 characters</p>";
     } else if (!validateEmail(userId)) {

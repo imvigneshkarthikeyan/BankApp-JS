@@ -253,6 +253,11 @@ function validateEmail(email) {
     return regex.test(email);
 }
 
+function validatePANnumber(pan) {
+    var regex = /^([a-zA-Z]){5}([0-9]){4}([a-zA-Z]){1}?$/;
+    return regex.test(pan);
+}
+
 //Limit Account Number to 11 Characters
 function limitAccNum(element, msgDiv, btn) {
     if (element.value.length > 11 || element.value.length < 11) {
@@ -1681,6 +1686,8 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         msgDiv.innerHTML = "<p style=color:red>Invalid phone number, Please try again(10 digits is valid).</p>";
     } else if (userPan.length != 10) {
         msgDiv.innerHTML = "<p style=color:red>Invalid PAN number, Please try again(10 digits is valid).</p>";
+    } else if (!validatePANnumber(userPan)) {
+        msgDiv.innerHTML = "<p style=color:red>Invalid PAN number, Example PAN number => INFPK6487M.</p>";
     } else if (isNaN(userAadhar)) {
         msgDiv.innerHTML = "<p style=color:red>Aadhar should not have text, please enter number.</p>";
     } else if (userAadhar.length != 12) {

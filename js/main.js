@@ -296,13 +296,9 @@ function getTimeStamp() {
     return formattedDate;
 }
 
-//ID Generators
-function generateUniqueID() {
-    return Math.trunc(Math.random()*100000000).toString();
-}
-
-function generateAccountNumber() {
-    return Math.trunc(Math.random()*100000000000).toString();
+//ID Generator
+function generateUniqueID(num) {
+    return Math.trunc(Math.random()*Number("1".padEnd(num+1, "0"))).toString();
 }
 
 //================================================================================================================================================================//
@@ -807,7 +803,7 @@ function validateAndTransferFund(customer) {
                 let toAccount = accountData.find(account => account.account_num === accNum);
                 fromAccount.amount = Number(fromAccount.amount) - Number(amount);
                 transactionData.push({
-                    "trans_id": generateUniqueID(),
+                    "trans_id": generateUniqueID(8),
                     "cust_id": fromAccount.cust_id,
                     "bank_id": fromAccount.bank_id,
                     "from_acc_no": fromAccount.account_num,
@@ -819,7 +815,7 @@ function validateAndTransferFund(customer) {
                 });
                 toAccount.amount = Number(toAccount.amount) + Number(amount);
                 transactionData.push({
-                    "trans_id": generateUniqueID(),
+                    "trans_id": generateUniqueID(8),
                     "cust_id": toAccount.cust_id,
                     "bank_id": toAccount.bank_id,
                     "from_acc_no": fromAccount.account_num,
@@ -1082,7 +1078,7 @@ function validateAndAddMoney(employee) {
             getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) + Number(amount);
             console.log(getAccountDetailsWithAccountNumber(accNum).amount);
             transactionData.push({
-                    "trans_id": generateUniqueID(),
+                    "trans_id": generateUniqueID(8),
                     "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                     "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                     "from_acc_no": accNum,
@@ -1186,7 +1182,7 @@ function validateAndWithdrawMoney(employee) {
             getAccountDetailsWithAccountNumber(accNum).amount = Number(getAccountDetailsWithAccountNumber(accNum).amount) - Number(amount);
             console.log(getAccountDetailsWithAccountNumber(accNum).amount);
             transactionData.push({
-                    "trans_id": generateUniqueID(),
+                    "trans_id": generateUniqueID(8),
                     "cust_id": getAccountDetailsWithAccountNumber(accNum).cust_id,
                     "bank_id": getAccountDetailsWithAccountNumber(accNum).bank_id,
                     "from_acc_no": accNum,
@@ -1361,7 +1357,7 @@ function validateAndAddStaff(employee) {
         msgDiv.innerHTML = "<p style=color:red>Password should be minimum 3 characters and maximum of 16 characters</p>";        
     } else {
         employeeData.push({
-                "emp_id": generateUniqueID(),
+                "emp_id": generateUniqueID(8),
                 "emp_login_id": newStaffID,
                 "emp_pass": newStaffPass,
                 "bank_id": employee.bank_id,
@@ -1699,7 +1695,7 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         msgDiv.innerHTML = "<p style=color:red>Phone number already exists, go back and login or try giving different Phone number.</p>";
     } else {
         customerData.push({
-            "cust_id": generateUniqueID(),
+            "cust_id": generateUniqueID(8),
             "cust_login_id": userId,
             "cust_pass": userPass,
             "bank_id": bank.bank_id,
@@ -1711,8 +1707,8 @@ function validateAndCreateNewUser(userName, userId, userBankName, userBranchName
         });
         let customer = customerData.find(c => c.cust_login_id === userId);
         accountData.push({
-            "account_id": generateUniqueID(),
-            "account_num": generateAccountNumber(),
+            "account_id": generateUniqueID(8),
+            "account_num": generateUniqueID(11),
             "amount": "0",
             "cust_id": customer.cust_id,
             "bank_id": bank.bank_id

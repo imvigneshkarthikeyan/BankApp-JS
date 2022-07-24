@@ -276,6 +276,7 @@ function openCustomerLogin() {
 
 //Login Validator For Customer
 function logIn(id, pass, msg) {
+    openLoginPage();
     var userId = document.getElementById(id).value.trim();
     var userPass = document.getElementById(pass).value;
     let msgDiv = document.getElementById(msg);
@@ -313,6 +314,7 @@ function customerAuthenticateLogin(userId, userPass, msgDiv, id, pass) {
 
 //Login Validator For Employee
 function logInForEmployee(id, pass, msg) {
+    openLoginPage();
     var userId = document.getElementById(id).value.trim();
     var userPass = document.getElementById(pass).value;
     let msgDiv = document.getElementById(msg);
@@ -387,6 +389,7 @@ function isUserCustomer(userId, customer) {
 //================================================================================================================================================================//
 //Customer Home
 function openCustomerDetails() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -423,6 +426,7 @@ function fetchAndDisplayCustomerDetails(customer) {
 //================================================================================================================================================================//
 //Customer Show Balance
 function openCustomerShowBalance() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -453,6 +457,7 @@ function fetchAndDisplayCustomerBalance(customer) {
 //================================================================================================================================================================//
 //Open Customer Edit Info Tab
 function openCustomerInfoTab() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -479,6 +484,7 @@ function openCustomerInfoTab() {
 
 //Fetch Other details and show edit text box
 function showEditFields() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -510,11 +516,12 @@ function showPassword() {
 
 //Edit Customer Information function
 function editInfo() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
         let customer = customerData.find(customer => customer.cust_login_id === userId);
-        if (userId != null && typeof customer != "undefined") {
+        if (isUserCustomer(userId, customer)) {
             validateAndUpdateCustomerData(customer);
         } else {
             throw new Error('Invalid User!');
@@ -561,6 +568,7 @@ function validateAndUpdateCustomerData(customer) {
 //================================================================================================================================================================//
 //Open Transactions
 function openCustomerTransactions() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -622,6 +630,7 @@ function fetchAndDisplayCustomerTransactions(customer) {
 //================================================================================================================================================================//
 //Open Transfer Fund
 function openCustomerTransferFund() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -652,6 +661,7 @@ function openCustomerTransferFund() {
 
 //Validate Account Number 
 function validateAccountNumberForTransfer() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -692,6 +702,7 @@ function accountNumberValidationAndRedirect(customer) {
 
 //Transfer Fund
 function transferFund() {
+    closeOtherPagesForCustomerHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -792,6 +803,7 @@ function isUserBankManager(userId, employee) {
 //================================================================================================================================================================//
 //Employee Home
 function openEmployeeDetails() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -843,6 +855,7 @@ function fetchAndDisplayBankStaffDetails(employee) {
 //================================================================================================================================================================//
 //View All Customers
 function openViewAllCustomers() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -902,6 +915,7 @@ function fetchAndDisplayAllCustomersInBank(employee) {
 //================================================================================================================================================================//
 //Open Add Money
 function openAddMoney() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -931,6 +945,7 @@ function openAddMoney() {
 
 //Validate Customer Account Number
 function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, operation) {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -965,6 +980,7 @@ function validateCustomerAccountNumber(field, msgDiv, divToHide, divToOpen, oper
 
 //Add Money Function
 function addMoney() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1034,6 +1050,7 @@ function validateAndAddMoney(employee) {
 //================================================================================================================================================================//
 //Open Withdraw Money
 function openWithdrawMoney() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1065,6 +1082,7 @@ function openWithdrawMoney() {
 
 //Withdraw Money Function
 function withdrawMoney() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1136,6 +1154,7 @@ function validateAndWithdrawMoney(employee) {
 //================================================================================================================================================================//
 //View All Staff
 function openViewAllStaffs() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1192,6 +1211,7 @@ function fetchAndDisplayAllEmployeesInBank(employee) {
 //================================================================================================================================================================//
 //Open Add New Staff
 function openManagerAddStaffs() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1221,6 +1241,7 @@ function openManagerAddStaffs() {
 
 //Validate if ID available or not
 function validateStaffToAdd() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1250,6 +1271,7 @@ function validateStaffToAdd() {
 
 //Add Staff
 function addStaff() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1300,6 +1322,7 @@ function validateAndAddStaff(employee) {
 //================================================================================================================================================================//
 //Open Delete Staff
 function openManagerDeleteStaffs() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1329,6 +1352,7 @@ function openManagerDeleteStaffs() {
 
 //Validations for delete staff
 function validateStaffToDelete() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1364,6 +1388,7 @@ function validateStaffToDelete() {
 
 //Delete Staff Function
 function deleteStaff() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1408,6 +1433,7 @@ function validateAndDeleteStaff(employee) {
 //================================================================================================================================================================//
 //Open Bank Wide Transactions
 function openBankWideTransactions() {
+    closeOtherPagesForStaffHome();
     var userIdJSON = sessionStorage.getItem("currentUser");
     try {
         var userId = JSON.parse(userIdJSON);
@@ -1475,6 +1501,7 @@ function openSignUp() {
 
 //Check userID exist
 function checkUserExist() {
+    openSignUpPage();
     var userName = document.getElementById("nameFieldSignUp").value.trim();
     var userId = document.getElementById("loginIdFieldSignUp").value.trim();
     let errorDiv = document.getElementById("errorMsgSignUp");
@@ -1516,6 +1543,7 @@ function fetchUniqueBanksAndPopulate() {
 
 //Get branch for selected bank Function
 function getBranchForBank() {
+    openSignUpPage();
     var bankField = document.getElementById("bankSelectField");
     var selectedBank = bankField.options[bankField.selectedIndex].value.trim();
     if (typeof bankData.find(b => b.bank_name === selectedBank) !== "undefined") {
@@ -1539,6 +1567,7 @@ function getBranchForBank() {
 
 //Open other details in signup
 function openOtherDetailsForSignUp() {
+    openSignUpPage();
     var bankField = document.getElementById("bankSelectField");
     var selectedBank = bankField.options[bankField.selectedIndex].value.trim();
     var branchField = document.getElementById("branchSelectField");
@@ -1558,6 +1587,7 @@ function openOtherDetailsForSignUp() {
 
 //SignUp
 function signUp() {
+    openSignUpPage();
     var userName = document.getElementById("nameFieldSignUp").value.trim();
     var userId = document.getElementById("loginIdFieldSignUp").value.trim();
     var userBankName = document.getElementById("bankSelectField").value.trim();
@@ -1679,6 +1709,21 @@ function openStaffHomePage() {
     document.getElementById("staffHomePageDiv").style.display = "";   
     openEmployeeDetails();   
 }
+
+function closeOtherPagesForCustomerHome() {
+    document.getElementById("loginPageDiv").style.display = "none";
+    document.getElementById("signUpPageDiv").style.display = "none";
+    document.getElementById("customerHomePageDiv").style.display = "";
+    document.getElementById("staffHomePageDiv").style.display = "none"; 
+}
+
+function closeOtherPagesForStaffHome() {
+    document.getElementById("loginPageDiv").style.display = "none";
+    document.getElementById("signUpPageDiv").style.display = "none";
+    document.getElementById("customerHomePageDiv").style.display = "none";
+    document.getElementById("staffHomePageDiv").style.display = "";   
+}
+
 
 //================================================================================================================================================================//
 //================================================================================================================================================================//
